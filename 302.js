@@ -3,7 +3,7 @@
 
 function is_achilles( map ) {
 
-    let powers = Object.values( map ) ;
+    const powers = Object.values( map ) ;
     
     // n % p^2 == 0
     for ( let power of powers ) {
