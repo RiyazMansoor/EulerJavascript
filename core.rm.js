@@ -1,6 +1,6 @@
 
 
-class Numbers {
+class PrimeGenerator {
 
     constructor( upto_num ) {
 
@@ -27,10 +27,10 @@ class Numbers {
 
         while ( this.LeastFactors[num] < num ) {
             const factor = this.LeastFactors[num] ;
-            Numbers.MultiplyNum( map, factor ) ;
+            NumUtil.MultiplyNum( map, factor ) ;
             num /= factor ;
         }
-        Numbers.MultiplyNum( map, num ) ;
+        NumUtil.MultiplyNum( map, num ) ;
        
         return map ;
 
@@ -47,6 +47,10 @@ class Numbers {
 
     }
 
+}
+
+class NumUtil {
+
     static MultiplyNum( map, base, power = 1) {
 
         if ( map[base] ) power += map[base] ;
@@ -57,10 +61,8 @@ class Numbers {
     }
 
     static MultiplyMap( map, map2 ) {
-    
-        const bases2 = Object.keys( map2 ) ;
-        for ( let bi in bases2 ) {
-            const base = bases2[bi] ;
+
+        for ( const base of Object.keys( map2 ) ) {
             let power = map2[base] ;
             if ( map[base] ) power += map[base] ;
             map[base] = power ;
@@ -95,6 +97,50 @@ class Numbers {
 
         return gcd_value ;
 
+    }
+
+    /**
+     * @param {number[]} nums
+     * @param {number} target
+     * @return {number}
+     */
+    static BinaryInsert( nums, target ) {
+        
+        let start = 0 ,
+            end = nums.length - 1 ,
+            index = Math.floor( ( end - start ) / 2 ) ;
+
+        if ( target > nums[nums.length-1] ) {
+            // The target is beyond the end of this array.
+            index = nums.length;
+        }
+        else {
+            // Start in middle, divide and conquer.
+            while ( start < end ) {
+                
+                // Get value at current index.
+                const value = nums[index];
+
+                if ( value === target ) {
+                    // Found our target.
+                    break ;
+                }
+                else if ( target < value ) {
+                    // Target is lower in array, move the index halfway down.
+                    end = index;
+                }
+                else {
+                    // Target is higher in array, move the index halfway up.
+                    start = index + 1;
+                }
+
+                // Get next mid-point.
+                index = Math.floor((end - start) / 2) + start;
+
+            }
+        }
+
+        return index;
     }
 
 
