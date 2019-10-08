@@ -6,3 +6,7 @@ function start_triple( N ) {
     return { x:x, y:1, k:k }
 }
 
+function next_triple( triple, N ) {
+        
+}
+
