@@ -1,4 +1,3 @@
-"use strict";
 /*
     Solutions:
     10^1    => [ 3, 1 ]                 => 5
@@ -23,33 +22,44 @@ function resolve(power) {
     }
     return sol;
 }
+function next_gap(arr, start = 0) {
+    let ind = start;
+    let val = arr[ind];
+    while (val == arr[ind]) {
+        ind++;
+        val--;
+    }
+    return ind;
+}
+function calc(powers, i1, i2, cache) {
+    const p0 = powers[i1];
+    const p1 = powers[i2];
+    const pred_cum = powers.slice(i2).map(p => cache.get(p)).reduce((p, c) => p + c, 0);
+    return (p0 - p1) * pred_cum;
+}
+function pred_cum(nums, cache) {
+    return nums.slice(1).map(p => cache.get(p)).reduce((p, c) => p + c, 0);
+}
+function repower(powers) {
+    const len = powers.length;
+    const ind = next_gap(powers, 0);
+    if (ind == len)
+        return [];
+    const new_powers = powers.slice(ind - 1);
+    new_powers[0]--;
+    return new_powers;
+}
 function compute(powers, cache) {
-    // const sum: number = powers.slice(1).map( k => cache.get(k) ?? -999 ).reduce((p,c)=>p+c,0);
-    const sum = cache.get(powers[1]) ?? -222222;
-    let cnt = (powers[0] - powers[1] - 1) * sum;
-    console.log(`sum=${sum} cnt=${cnt}`);
-    if (powers.length == 2 || powers[1] != powers[2] + 1) {
-        cnt += sum - 1;
+    // if (powers[0] == powers[1] + 1) return cache.get(powers[1]) as number;
+    const new_powers = repower(powers);
+    const predcum = pred_cum(new_powers, cache);
+    let cnt = (new_powers[0] - new_powers[1]) * predcum;
+    console.log(`pred_cum=${predcum} cnt=${cnt}`);
+    if (new_powers.length == 2) {
+        cnt += predcum - 1;
     }
     else {
-        let i = 2;
-        while (true) {
-            if (i + 1 == powers.length) {
-                cnt += cache.get(i) ?? -9999999999;
-                break;
-            }
-            else if (powers[i] == powers[i] + 1) {
-                i++;
-            }
-            else {
-                const new_head = powers[i] - 1;
-                const new_tail = powers[i + 1];
-                console.log(new_head, new_tail);
-                cnt += (new_head - new_tail) * (cache.get(new_tail) ?? -44444);
-                cnt += (cache.get(new_tail) ?? -44444) - 1;
-                break;
-            }
-        }
+        cnt += compute(repower(new_powers.slice(1)), cache);
     }
     return cnt;
 }
