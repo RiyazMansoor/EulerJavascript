@@ -16,12 +16,15 @@ const POS = {
     ypos: 1, 
     face: DIR.N,
     count: 1,
-    path: "N"
+    path: "N",
+    chkstr: ""
  }
 
-const D: number = parseInt(process.argv[2] ?? "10");
+const D: number = parseInt(process.argv[2] ?? "50");
+const BreakAt: number = parseInt(process.argv[3] ?? "2600000000");
+const ChkLen: number = parseInt(process.argv[4] ?? "9000000");
 
-const BreakAt: number = parseInt(process.argv[3] ?? "500");
+const Sols: number[] = [];
 
 function foward(): void {
     switch (POS.face) {
@@ -40,10 +43,28 @@ function foward(): void {
         default:
             throw "bad direction"
     }
-    POS.path += DIR[POS.face];
     POS.count++;
+    // POS.path += DIR[POS.face];
+    // if (POS.count == ChkLen) {
+    //     POS.chkstr = POS.path;
+    //     POS.path = "";
+    // }
+    // const bufflen: number = 4 * ChkLen;
+    // if (POS.path.length == bufflen) {
+    //     const ind: number = POS.path.indexOf(POS.chkstr);
+    //     console.log(`count=${POS.count} chklen=${ChkLen} foundIndex=${ind} absIndex=${POS.count - bufflen + ind}`);
+    //     if (ind > 0) {
+    //         Sols.push(POS.count - bufflen + ind);
+    //         console.log(Sols);
+    //     }
+    //     POS.path = POS.path.slice(-ChkLen);
+    // }
+    if (POS.count % 301989888 == 0) {
+        console.log(`${POS.count}`);
+        console.log(`${POS.xpos},${POS.ypos}`);
+    }
     if (POS.count == BreakAt) {
-        console.log(POS);
+        console.log(`${POS.xpos},${POS.ypos}`);
     }
 }
 
@@ -120,6 +141,35 @@ function stepper(depth: number, spath: StrPath) {
 
 function e220() {
     stepper(D, StrPath.A);
+    console.log(`walked`);
+    /*
+    const steps: string = POS.path;
+    // find length of repeat pattern
+    let foundlen: number = -1;
+    for (let chklen = 200000; chklen < steps.length/2; chklen += 200000) {
+        const chkstr: string = steps.slice(0, chklen);
+        const fndlen: number = steps.indexOf(chkstr, chklen);
+        console.log(`first match at ${fndlen} for chklen=${chklen}`)
+        if (fndlen < 0) {
+            // numbers too big - assume last found length is the cycle.
+            break;
+        }
+        // verify
+        const same: number = chkstr.localeCompare(steps.slice(fndlen*2, fndlen));
+        if (same == 0) {
+            foundlen = fndlen;
+            break;
+        }
+        foundlen = fndlen;
+    }
+    console.log(foundlen);
+    const fndb: bigint = BigInt(foundlen);
+    const maxb: bigint = 10n**12n;
+    const intb: bigint = maxb / fndb;
+    const remb: bigint = maxb - (intb * fndb);
+    console.log(intb, remb);
+
+    */
 }
 
 e220();
