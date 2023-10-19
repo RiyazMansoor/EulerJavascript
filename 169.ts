@@ -7,6 +7,8 @@
     10^4    => [ 13, 10, 9, 8, 4 ]      => 205
     10^5    => [ 16, 15, 10, 9, 7, 5 ]  => 713
     10^10   => 
+    10^25   =>                          => 178653872807
+    
  */
 
 
@@ -62,12 +64,12 @@ function compute(powers: number[], cache:Map<number, number>): number {
     const new_powers: number[] = repower(powers);
     const predcum: number = pred_cum(new_powers, cache);
     let cnt: number = (new_powers[0] - new_powers[1]) * predcum;
-    console.log(`pred_cum=${predcum} cnt=${cnt}`);
+    console.log(`pred_cum=${predcum} cnt=${cnt} powers=${powers} new_powers=${new_powers}`);
 
     if (new_powers.length == 2) {
         cnt += predcum - 1;
     } else {
-        cnt += compute(repower(new_powers.slice(1)), cache);
+        cnt += compute(new_powers.slice(1), cache);
     }
 
     return cnt;
