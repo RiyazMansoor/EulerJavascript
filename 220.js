@@ -1,4 +1,6 @@
 "use strict";
+const DragonLevel = parseInt(process.argv[2] ?? "10");
+const BreakCount = parseInt(process.argv[3] ?? "500");
 var StrPath;
 (function (StrPath) {
     StrPath["A"] = "aRbFR";
@@ -13,18 +15,13 @@ var DIR;
 })(DIR || (DIR = {}));
 const POS = {
     xpos: 0,
-    ypos: 1,
-    face: DIR.N,
-    count: 1,
-    path: "N",
-    chkstr: ""
+    ypos: 0,
+    count: 0,
+    direction: DIR.N,
 };
-const D = parseInt(process.argv[2] ?? "50");
-const BreakAt = parseInt(process.argv[3] ?? "2600000000");
-const ChkLen = parseInt(process.argv[4] ?? "9000000");
-const Sols = [];
+const CacheStore = new Map();
 function foward() {
-    switch (POS.face) {
+    switch (POS.direction) {
         case DIR.N:
             POS.ypos++;
             break;
@@ -41,66 +38,60 @@ function foward() {
             throw "bad direction";
     }
     POS.count++;
-    // POS.path += DIR[POS.face];
-    // if (POS.count == ChkLen) {
-    //     POS.chkstr = POS.path;
-    //     POS.path = "";
-    // }
-    // const bufflen: number = 4 * ChkLen;
-    // if (POS.path.length == bufflen) {
-    //     const ind: number = POS.path.indexOf(POS.chkstr);
-    //     console.log(`count=${POS.count} chklen=${ChkLen} foundIndex=${ind} absIndex=${POS.count - bufflen + ind}`);
-    //     if (ind > 0) {
-    //         Sols.push(POS.count - bufflen + ind);
-    //         console.log(Sols);
-    //     }
-    //     POS.path = POS.path.slice(-ChkLen);
-    // }
-    if (POS.count % 301989888 == 0) {
-        console.log(`${POS.count}`);
-        console.log(`${POS.xpos},${POS.ypos}`);
-    }
-    if (POS.count == BreakAt) {
+    if (POS.count == BreakCount) {
         console.log(`${POS.xpos},${POS.ypos}`);
     }
 }
 function left() {
-    switch (POS.face) {
+    switch (POS.direction) {
         case DIR.N:
-            POS.face = DIR.W;
+            POS.direction = DIR.W;
             break;
         case DIR.E:
-            POS.face = DIR.N;
+            POS.direction = DIR.N;
             break;
         case DIR.S:
-            POS.face = DIR.E;
+            POS.direction = DIR.E;
             break;
         case DIR.W:
-            POS.face = DIR.S;
+            POS.direction = DIR.S;
             break;
         default:
             throw "bad direction";
     }
 }
 function right() {
-    switch (POS.face) {
+    switch (POS.direction) {
         case DIR.N:
-            POS.face = DIR.E;
+            POS.direction = DIR.E;
             break;
         case DIR.E:
-            POS.face = DIR.S;
+            POS.direction = DIR.S;
             break;
         case DIR.S:
-            POS.face = DIR.W;
+            POS.direction = DIR.W;
             break;
         case DIR.W:
-            POS.face = DIR.N;
+            POS.direction = DIR.N;
             break;
         default:
             throw "bad direction";
     }
 }
 function stepper(depth, spath) {
+    // check cache
+    let cpos = CacheStore.get(spath)?.get(POS.direction)?.get(depth);
+    if (cpos && (POS.count + cpos.count) < BreakCount) {
+        console.log(`path=${spath} dir=${cpos.direction} depth=${depth} count=${cpos.count}`);
+        POS.xpos += cpos.xpos;
+        POS.ypos += cpos.ypos;
+        POS.count += cpos.count;
+        POS.direction = cpos.direction;
+        return;
+    }
+    // prepare for caching
+    cpos = { ...POS };
+    const startdir = cpos.direction;
     for (const char of spath) { // TODO spath to string ?
         switch (char) {
             case "F":
@@ -131,40 +122,34 @@ function stepper(depth, spath) {
             default:
                 throw "errorX";
         }
-        if (POS.count >= BreakAt)
+        if (POS.count >= BreakCount)
             break;
+    }
+    if (!CacheStore.get(spath)?.get(startdir)?.get(depth)) {
+        cpos.xpos = POS.xpos - cpos.xpos;
+        cpos.ypos = POS.ypos - cpos.ypos;
+        cpos.count = POS.count - cpos.count;
+        cpos.direction = POS.direction;
+        CacheStore.get(spath)?.get(startdir)?.set(depth, cpos);
     }
 }
 function e220() {
-    stepper(D, StrPath.A);
+    const amap = new Map();
+    amap.set(DIR.N, new Map());
+    amap.set(DIR.E, new Map());
+    amap.set(DIR.S, new Map());
+    amap.set(DIR.W, new Map());
+    CacheStore.set(StrPath.A, amap);
+    const bmap = new Map();
+    bmap.set(DIR.N, new Map());
+    bmap.set(DIR.E, new Map());
+    bmap.set(DIR.S, new Map());
+    bmap.set(DIR.W, new Map());
+    CacheStore.set(StrPath.A, bmap);
+    POS.direction = DIR.N;
+    foward();
+    stepper(DragonLevel, StrPath.A);
     console.log(`walked`);
-    /*
-    const steps: string = POS.path;
-    // find length of repeat pattern
-    let foundlen: number = -1;
-    for (let chklen = 200000; chklen < steps.length/2; chklen += 200000) {
-        const chkstr: string = steps.slice(0, chklen);
-        const fndlen: number = steps.indexOf(chkstr, chklen);
-        console.log(`first match at ${fndlen} for chklen=${chklen}`)
-        if (fndlen < 0) {
-            // numbers too big - assume last found length is the cycle.
-            break;
-        }
-        // verify
-        const same: number = chkstr.localeCompare(steps.slice(fndlen*2, fndlen));
-        if (same == 0) {
-            foundlen = fndlen;
-            break;
-        }
-        foundlen = fndlen;
-    }
-    console.log(foundlen);
-    const fndb: bigint = BigInt(foundlen);
-    const maxb: bigint = 10n**12n;
-    const intb: bigint = maxb / fndb;
-    const remb: bigint = maxb - (intb * fndb);
-    console.log(intb, remb);
-
-    */
+    console.log(POS);
 }
 e220();
