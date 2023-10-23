@@ -12,7 +12,7 @@ function count_triples(triple, depth = 1) {
         return 0;
     }
     let cnt = 1;
-    for (const new_triple of (0, common_1.NextTriples)(triple)) {
+    for (const new_triple of common_1.NextTriples(triple)) {
         cnt += count_triples(new_triple, depth + 1);
     }
     return cnt;
