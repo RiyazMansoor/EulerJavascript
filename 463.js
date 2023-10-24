@@ -1,129 +1,126 @@
 "use strict";
-const CacheStore463 = new Map();
-function cacheValue(N) {
-    let result = CacheStore463.get(N);
-    if (result)
+var E463;
+(function (E463) {
+    const Modulo = 1000000000n;
+    const CacheResult = new Map();
+    const Cache2Powers = new Map();
+    const ARG_2 = parseInt(process.argv[2] ?? "0");
+    const MAX_INCLUSIVE = ARG_2 ? BigInt(ARG_2) : 3n ** 37n;
+    function cacheValue(N) {
+        let result = CacheResult.get(N);
+        if (result)
+            return result;
+        result = compute(N % Modulo);
+        CacheResult.set(N, result);
         return result;
-    result = compute463(N % 1000000000n);
-    CacheStore463.set(N, result);
-    return result;
-}
-function compute463(N) {
-    if (N === 1n) {
-        return 1;
     }
-    if (N === 3n) {
-        return 3;
-    }
-    if (N % 2n === 0n) {
-        return cacheValue(N / 2n);
-    }
-    if (N % 4n === 1n) {
-        const n = N / 4n;
-        return 2 * cacheValue(2n * n + 1n) - cacheValue(n);
-    }
-    if (N % 4n === 3n) {
-        const n = N / 4n;
-        return 3 * cacheValue(2n * n + 1n) - 2 * cacheValue(n);
-    }
-    return 0;
-}
-const N = parseInt(process.argv[2] ?? "1000");
-function e463() {
-    const timestamp = new Date().getTime();
-    const vals = [0];
-    let cumSum = 0;
-    for (let n = 1n; n <= N; n++) {
-        const result = compute463(n);
-        vals.push(result);
-        cumSum += result;
-        console.log(`n=${n} result=${result}  cumsum=${cumSum}`);
-    }
-    console.log(`duration(s)=${(new Date().getTime() - timestamp) / 1000}`);
-    for (const rem of [1, 2, 3, 4]) {
-        const series = [];
-        for (let i = rem; i < vals.length; i += 4) {
-            series.push(vals[i]);
+    function compute(N) {
+        if (N === 1n) {
+            return 1n;
         }
-        console.log(series);
+        if (N === 3n) {
+            return 3n;
+        }
+        if (N % 2n === 0n) {
+            return cacheValue(N / 2n);
+        }
+        if (N % 4n === 1n) {
+            const n = N / 4n;
+            return 2n * cacheValue(2n * n + 1n) - cacheValue(n);
+        }
+        if (N % 4n === 3n) {
+            const n = N / 4n;
+            return 3n * cacheValue(2n * n + 1n) - 2n * cacheValue(n);
+        }
+        return 0n;
     }
-    return cumSum;
-}
+    function e463() {
+        const vals = [0n];
+        let cumSum = 0n;
+        for (let n = 1n; n <= MAX_INCLUSIVE; n++) {
+            const result = compute(n);
+            vals.push(result);
+            cumSum += result;
+            console.log(`n=${n} result=${result}  cumsum=${cumSum}`);
+        }
+        // for (const rem of [ 1n, 2n, 3n, 4n ]) {
+        //     const series: bigint[] = [];
+        //     for (let i = rem; i < vals.length; i += 4n) {
+        //         series.push(vals[i]);
+        //     }
+        //     console.log(series);
+        // }
+        return cumSum;
+    }
+    function arithSum(a, n) {
+        // difference "2" factored in
+        return n * (a + (n - 1n));
+    }
+    function cacheTwoPowers(N) {
+        let result = Cache2Powers.get(N);
+        if (result)
+            return result;
+        result = 2n ** N;
+        Cache2Powers.set(N, result);
+        return result;
+    }
+    function run() {
+        const timestamp = new Date().getTime();
+        let MaxRunDown = MAX_INCLUSIVE - 4n;
+        let NCycleNum = 0n;
+        let SSum = 5n;
+        console.log(`SSum1=${SSum}`);
+        // add by blocks 4 * 2^n
+        while (true) {
+            NCycleNum++;
+            const blocksize = 4n * (2n ** NCycleNum);
+            if (blocksize > MaxRunDown) {
+                NCycleNum--;
+                break;
+            }
+            MaxRunDown -= blocksize;
+            // commong powers of 2
+            const NM1 = cacheTwoPowers(NCycleNum - 1n);
+            const N_0 = cacheTwoPowers(NCycleNum);
+            const NP1 = cacheTwoPowers(NCycleNum + 1n);
+            const NP2 = cacheTwoPowers(NCycleNum + 2n);
+            // Series 1 :: top = 3*2^(n) - 1, stt = 2^(n+2) + 1 , term_count = 2^(n) - 1 
+            SSum += 3n * N_0 - 1n;
+            console.log(`SSum2=${SSum}`);
+            const s1stt = NP2 + 1n;
+            SSum += arithSum(s1stt, N_0 - 1n);
+            console.log(`SSum3=${SSum}`);
+            // Series 3 :: top = 2^(n+2) - 1, start =  3*2^(n+1) + 1, terms = 2^(n) - 1 
+            SSum += NP2 - 1n;
+            console.log(`SSum4=${SSum}`);
+            const s3stt = 3n * NP1 + 1n;
+            SSum += arithSum(s3stt, N_0 - 1n);
+            console.log(`SSum5=${SSum}`);
+            // Series 4 end = 2^(n+1) - 1, sum = 2 * end
+            SSum += arithSum(1n, N_0);
+            console.log(`SSum6=${SSum}`);
+        }
+        // series 2 max
+        const Series2Terms = (MAX_INCLUSIVE - MaxRunDown) / 4n;
+        SSum += Series2Terms * Series2Terms; // series sum of odd numbers = n^2
+        console.log(`whole 2^power blocks calcluated = ${SSum} ncycles=${NCycleNum}`);
+        console.log(`duration(s)=${(new Date().getTime() - timestamp) / 1000}`);
+        if (MaxRunDown > 0n) {
+            console.log(`Remaining numbers = ${MaxRunDown}`);
+            // Remaining number = 162053529739285623
+            // too big to do singly like below.
+            const RemStart = MAX_INCLUSIVE - MaxRunDown + 1n;
+            for (let n = RemStart; n <= MAX_INCLUSIVE; n++) {
+                const singleResult = compute(n);
+                SSum += singleResult;
+                // console.log(`n=${n} result=${singleResult} ssum=${SSum}`);
+            }
+            console.log(`duration(s)=${(new Date().getTime() - timestamp) / 1000}`);
+        }
+        return SSum % 1000000000n;
+    }
+    E463.run = run;
+})(E463 || (E463 = {}));
 // console.log(e463());
-const MAX_INCLUSIVE = 3n ** 37n;
 //tri_num=1105442 sum=450283506288513521 max=450283905890997363
-function n2summation(n) {
-    return (n + 1n) * (2n * n + 1n) * n / 6n;
-}
-const Cache2Powers = new Map();
-function cacheTwoPowers(N) {
-    let result = Cache2Powers.get(N);
-    if (result)
-        return result;
-    result = 2n ** N;
-    Cache2Powers.set(N, result);
-    return result;
-}
-function seriesCount() {
-    // find how many triangle number fit into MAx
-    let triNum = 40n;
-    let newStt = 0n;
-    while (true) {
-        const sum = 2n ** triNum;
-        if (sum > MAX_INCLUSIVE) {
-            triNum--;
-            break;
-        }
-        triNum++;
-        newStt = sum + 1n;
-        // console.log(`tri_num=${triNum} sum=${sum} max=${MAX_INCLUSIVE}`);
-    }
-    console.log(`triNum=${triNum} newStt=${newStt}`);
-    let SSum = 6n; // n = 1,2,3,4;
-    for (let triN = 2n; triN <= triNum; triN++) {
-        const NM1 = cacheTwoPowers(triN - 1n);
-        const N_0 = cacheTwoPowers(triN);
-        const NP1 = cacheTwoPowers(triN + 1n);
-        const NtN = triN * triN;
-        // Series 1 :: top = 3*2^(n-1) - 1, stt = 2^(n+1) + 1, term_count = 2^(n-1) - 1 - 1
-        SSum += 3n * NM1 - 1n;
-        const s1stt = NP1 + 1n;
-        const s1end = s1stt + 2n * (NM1 - 2n);
-        SSum += s1end * s1end - s1stt * s1stt;
-        // Series 2 :: start = n^2 - 1  end = 2^(n+1) - 3
-        const s2stt = NtN - 1n;
-        const s2end = NP1 - 3n;
-        SSum += s2end * s2end - s2stt * s2stt;
-        // Series 3 :: top = 2^(n+1) - 1, start = 3*2^n + 1, terms = 2^(n-1) - 1
-        SSum += NP1 - 1n;
-        const s3stt = 3n * N_0 + 1n;
-        const s3end = NM1 - 1n;
-        SSum += s3end * s3end - s3stt * s3stt;
-        // Series 4
-        SSum += NtN;
-    }
-    console.log(SSum);
-    // last term = max_c
-    const NM1 = cacheTwoPowers(triNum - 1n);
-    const N_0 = cacheTwoPowers(triNum);
-    const NP1 = cacheTwoPowers(triNum + 1n);
-    const NtN = triNum * triNum;
-    // Series 1 :: top = 3*2^(n-1) - 1, stt = 2^(n+1) + 1, term_count = 2^(n-1) - 1 - 1
-    SSum += 3n * NM1 - 1n;
-    const s1stt = NP1 + 1n;
-    //    const s1end: bigint = s1stt + 2n * (NM1 - 2n);
-    SSum += MAX_INCLUSIVE * MAX_INCLUSIVE - s1stt * s1stt;
-    // Series 2 :: start = n^2 - 1  end = 2^(n+1) - 3
-    const s2stt = NtN - 1n;
-    const s2end = NP1 - 3n;
-    SSum += MAX_INCLUSIVE * MAX_INCLUSIVE - s2stt * s2stt;
-    // Series 3 :: top = 2^(n+1) - 1, start = 3*2^n + 1, terms = 2^(n-1) - 1
-    SSum += NP1 - 1n;
-    const s3stt = 3n * N_0 + 1n;
-    const s3end = NM1 - 1n;
-    SSum += MAX_INCLUSIVE * MAX_INCLUSIVE - s3stt * s3stt;
-    // Series 4
-    SSum += NtN;
-    return SSum % 1000000000n;
-}
-console.log(seriesCount());
+console.log(E463.run());
