@@ -12,4 +12,4 @@ function scanner() {
     }
     return cnt;
 }
-console.log(common_1.PrimesUpto(1e6).length);
+console.log((0, common_1.PrimesUpto)(1e6).length);

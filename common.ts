@@ -1,27 +1,31 @@
 
-export type Triple = {
-    a: number,
-    b: number,
-    c: number
-}
+namespace Pythagorean {
 
-export const RootTriple: Triple = {
-    a: 3,
-    b: 4,
-    c: 5
+    export type Triple = {
+        a: number,
+        b: number,
+        c: number
+    }
+    
+    export const RootTriple: Triple = {
+        a: 3,
+        b: 4,
+        c: 5
+    }
+    
+    // returns the next 3 primitive pythagorean triples
+    export function NextTriples(triple: Triple): Triple[] {
+        const { a, b, c } = triple ;
+        const a2 = 2 * a, b2 = 2 * b, c2 = 2 * c, c3 = 3 * c ;
+        return [
+            { a: (  a - b2 + c2 ), b: (  a2 - b + c2 ), c: (  a2 - b2 + c3 ) }, 
+            { a: (  a + b2 + c2 ), b: (  a2 + b + c2 ), c: (  a2 + b2 + c3 ) }, 
+            { a: ( -a + b2 + c2 ), b: ( -a2 + b + c2 ), c: ( -a2 + b2 + c3 ) }, 
+        ] ;
+    }
+    
+    
 }
-
-// returns the next 3 primitive pythagorean triples
-export function NextTriples(triple: Triple): Triple[] {
-    const { a, b, c } = triple ;
-    const a2 = 2 * a, b2 = 2 * b, c2 = 2 * c, c3 = 3 * c ;
-    return [
-        { a: (  a - b2 + c2 ), b: (  a2 - b + c2 ), c: (  a2 - b2 + c3 ) }, 
-        { a: (  a + b2 + c2 ), b: (  a2 + b + c2 ), c: (  a2 + b2 + c3 ) }, 
-        { a: ( -a + b2 + c2 ), b: ( -a2 + b + c2 ), c: ( -a2 + b2 + c3 ) }, 
-    ] ;
-}
-
 
 export function GCD(n1: number, n2: number): number {
     while ( n1 ) {
