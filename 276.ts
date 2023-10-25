@@ -1,5 +1,5 @@
 
-import { PrimesUpto } from "./common";
+import { PrimeNumbers } from "./common";
 
 const MAX_PERIMETER = parseInt(process.argv[2] ?? "100");
 
@@ -16,4 +16,4 @@ function scanner(): number {
 }
 
 
-console.log(PrimesUpto(1e6).length);
+console.log(new PrimeNumbers(1e6).toArray().length);

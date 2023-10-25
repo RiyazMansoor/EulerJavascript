@@ -1,3 +1,4 @@
+"use strict";
 var E419;
 (function (E419) {
     function countToken(token) {
@@ -37,6 +38,7 @@ var E419;
         }
         return result;
     }
+    // to check algorithm against n=40
     function runBrute() {
         let token = "1";
         for (let i = 0; i < 40; i++) {
