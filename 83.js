@@ -82,40 +82,42 @@ const matrixText = [
     [2132, 8992, 8160, 5782, 4420, 3371, 3798, 5054, 552, 5631, 7546, 4716, 1332, 6486, 7892, 7441, 4370, 6231, 4579, 2121, 8615, 1145, 9391, 1524, 1385, 2400, 9437, 2454, 7896, 7467, 2928, 8400, 3299, 4025, 7458, 4703, 7206, 6358, 792, 6200, 725, 4275, 4136, 7390, 5984, 4502, 7929, 5085, 8176, 4600, 119, 3568, 76, 9363, 6943, 2248, 9077, 9731, 6213, 5817, 6729, 4190, 3092, 6910, 759, 2682, 8380, 1254, 9604, 3011, 9291, 5329, 9453, 9746, 2739, 6522, 3765, 5634, 1113, 5789],
     [5304, 5499, 564, 2801, 679, 2653, 1783, 3608, 7359, 7797, 3284, 796, 3222, 437, 7185, 6135, 8571, 2778, 7488, 5746, 678, 6140, 861, 7750, 803, 9859, 9918, 2425, 3734, 2698, 9005, 4864, 9818, 6743, 2475, 132, 9486, 3825, 5472, 919, 292, 4411, 7213, 7699, 6435, 9019, 6769, 1388, 802, 2124, 1345, 8493, 9487, 8558, 7061, 8777, 8833, 2427, 2238, 5409, 4957, 8503, 3171, 7622, 5779, 6145, 2417, 5873, 5563, 5693, 9574, 9491, 1937, 7384, 4563, 6842, 5432, 2751, 3406, 7981],
 ];
+const common_1 = require("./common");
 var E83;
 (function (E83) {
     const matrix = matrixText;
     // const matrix: Integer[][] = [
-    //     [ 131, 673, 234, 103,  18 ],
-    //     [ 201,  96, 342, 965, 150 ],
-    //     [ 630, 803, 746, 422, 111 ],
-    //     [ 537, 699, 497, 121, 956 ],
-    //     [ 805, 732, 524,  37, 331 ],
+    //     [131, 673, 234, 103, 18],
+    //     [201, 96, 342, 965, 150],
+    //     [630, 803, 746, 422, 111],
+    //     [537, 699, 497, 121, 956],
+    //     [805, 732, 524, 37, 331],
     // ];
     const MaxIndex = matrix.length - 1;
-    function stepped(pos, travelled) {
-        return travelled.findIndex(tpos => tpos.x == pos.x && tpos.y == pos.y) >= 0;
+    function stepped(pos, positions) {
+        return positions.findIndex(tpos => tpos.x == pos.x && tpos.y == pos.y) >= 0;
     }
-    function stepOptions(pos, travelled) {
+    const cacheRedPos = [];
+    function stepOptions(pos, travelled, nogos) {
         const options = [];
         if (pos.x > 0) {
             const apos = { x: pos.x - 1, y: pos.y };
-            if (!stepped(apos, travelled))
+            if (!stepped(apos, travelled) && !stepped(apos, nogos) && !stepped(apos, cacheRedPos))
                 options.push(apos);
         }
         if (pos.x < MaxIndex) {
             const apos = { x: pos.x + 1, y: pos.y };
-            if (!stepped(apos, travelled))
+            if (!stepped(apos, travelled) && !stepped(apos, nogos) && !stepped(apos, cacheRedPos))
                 options.push(apos);
         }
         if (pos.y > 0) {
             const apos = { x: pos.x, y: pos.y - 1 };
-            if (!stepped(apos, travelled))
+            if (!stepped(apos, travelled) && !stepped(apos, nogos) && !stepped(apos, cacheRedPos))
                 options.push(apos);
         }
         if (pos.y < MaxIndex) {
             const apos = { x: pos.x, y: pos.y + 1 };
-            if (!stepped(apos, travelled))
+            if (!stepped(apos, travelled) && !stepped(apos, nogos) && !stepped(apos, cacheRedPos))
                 options.push(apos);
         }
         if (options.length < 2)
@@ -124,32 +126,41 @@ var E83;
         return options;
     }
     let MinSum = 1e12;
-    function find(pos, sum, travelled) {
+    function find(pos, sum, travelled, nogos) {
         if (pos.x == MaxIndex && pos.y == MaxIndex) {
             console.log(`End Reached :: len=${travelled.length} sum=${sum} min=${MinSum}`);
             if (sum < MinSum)
                 MinSum = sum;
             return;
         }
-        const options = stepOptions(pos, travelled);
-        console.log(travelled.length, travelled[travelled.length - 1]);
-        // if (travelled.length == 10) {
-        //     console.log(pos, options, travelled);
-        // }
+        const options = stepOptions(pos, travelled, nogos);
         if (!options.length)
             return;
-        for (const npos of options) {
+        // console.log(travelled.length, travelled[travelled.length - 1]);
+        if (travelled.length == 10) {
+            console.log(MinSum, pos, options, travelled);
+        }
+        for (const [index, npos] of options.entries()) {
             const nsum = matrix[npos.x][npos.y] + sum;
-            if (nsum >= MinSum)
-                continue;
-            find(npos, nsum, travelled.concat([npos]));
+            if (nsum >= MinSum) {
+                cacheRedPos.push(npos);
+                console.log(`MinSum=${MinSum} CacheSize=${cacheRedPos.length} exceeded pos = `, npos);
+            }
+            const nnogos = options.filter((v, i) => i != index);
+            find(npos, nsum, travelled.concat([npos]), nogos.concat(nnogos));
         }
     }
     function run() {
+        // compute a MinSum
+        const transposed = common_1.Numbers.transpose(matrix);
+        const min1 = common_1.Numbers.Sum(matrix[0]) + common_1.Numbers.Sum(transposed[MaxIndex]);
+        const min2 = common_1.Numbers.Sum(matrix[MaxIndex]) + common_1.Numbers.Sum(transposed[0]);
+        MinSum = Math.min(min1, min2);
+        // find min path
         const startPos = { x: 0, y: 0 };
         const startSum = matrix[startPos.x][startPos.y];
         const startTravelled = [startPos];
-        find(startPos, startSum, startTravelled);
+        find(startPos, startSum, startTravelled, []);
         return MinSum;
     }
     E83.run = run;
