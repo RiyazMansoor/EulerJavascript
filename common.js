@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Fraction = exports.PrimeNumbers = exports.Pythagorean = exports.Numbers = void 0;
+exports.Fraction = exports.PrimeNumbers = exports.Util = exports.Pythagorean = exports.Numbers = void 0;
 var Numbers;
 (function (Numbers) {
     function GCD(n1, n2) {
@@ -51,17 +51,17 @@ var Numbers;
         return -1;
     }
     Numbers.binarySearch = binarySearch;
-    function transpose(matrix) {
-        let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length));
+    function Transpose(matrix) {
+        let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length).fill(0));
         for (let i = 0; i < result.length; i++) {
-            for (let j = 0; j < matrix.length; j++) {
+            for (let j = 0; j < result[0].length; j++) {
                 result[i][j] = matrix[j][i];
             }
         }
         return result;
     }
-    Numbers.transpose = transpose;
-})(Numbers = exports.Numbers || (exports.Numbers = {}));
+    Numbers.Transpose = Transpose;
+})(Numbers || (exports.Numbers = Numbers = {}));
 var Pythagorean;
 (function (Pythagorean) {
     Pythagorean.RootTriple = {
@@ -80,8 +80,25 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
+})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
+var Util;
+(function (Util) {
+    const fs = require('fs');
+    function readFile(filename) {
+        return fs.readFileSync(filename, 'utf8');
+    }
+    Util.readFile = readFile;
+    function csvToStrMatrix(csv) {
+        return csv.split("\n").map(line => line.split(",").map(data => data.trim()));
+    }
+    Util.csvToStrMatrix = csvToStrMatrix;
+    function csvToIntMatrix(csv) {
+        return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
+    }
+    Util.csvToIntMatrix = csvToIntMatrix;
+})(Util || (exports.Util = Util = {}));
 class PrimeNumbers {
+    primes;
     constructor(uptoN) {
         const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
@@ -136,9 +153,9 @@ class PrimeNumbers {
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
+    num = 1;
+    den = 1;
     constructor(numerator, denominator) {
-        this.num = 1;
-        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }

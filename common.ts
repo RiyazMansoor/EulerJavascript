@@ -12,7 +12,6 @@ export namespace Numbers {
         return n2;
     }
 
-
     export function LCM(n1: Integer, n2: Integer): Integer {
         return n1 * n2 / GCD(n1, n2);
     }
@@ -53,10 +52,10 @@ export namespace Numbers {
         return -1;
     }
 
-    export function transpose(matrix: Integer[][]): Integer[][] {
-        let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length));
+    export function Transpose(matrix: Integer[][]): Integer[][] {
+        let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length).fill(0));
         for (let i = 0; i < result.length; i++) {
-            for (let j = 0; j < matrix.length; j++) {
+            for (let j = 0; j < result[0].length; j++) {
                 result[i][j] = matrix[j][i];
             }
         }
@@ -92,6 +91,24 @@ export namespace Pythagorean {
         ];
     }
 
+
+}
+
+export namespace Util {
+
+    const fs = require('fs');
+
+    export function readFile(filename: string): string {
+        return fs.readFileSync(filename, 'utf8');
+    }
+
+    export function csvToStrMatrix(csv: string): string[][] {
+        return csv.split("\n").map(line => line.split(",").map(data => data.trim()));
+    }
+
+    export function csvToIntMatrix(csv: string): Integer[][] {
+        return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
+    }
 
 }
 
@@ -153,24 +170,6 @@ export class PrimeNumbers {
 
     toArray(): SortedIntegerArray {
         return this.primes.concat([]);
-    }
-
-}
-
-export namespace Util {
-
-    const fs = require('fs');
-
-    export function readFile(filename: string): string {
-        return fs.readFileSync('/Users/joe/test.txt', 'utf8');
-    }
-
-    export function csvToStrMatrix(csv: string): string[][] {
-        return csv.split("\n").map(line => line.split(",").map(data => data.trim()));
-    }
-
-    export function csvToIntMatrix(csv: string): Integer[][] {
-        return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
 
 }
