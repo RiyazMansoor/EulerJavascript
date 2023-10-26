@@ -61,7 +61,31 @@ var Numbers;
         return result;
     }
     Numbers.Transpose = Transpose;
-})(Numbers || (exports.Numbers = Numbers = {}));
+    function Factorial(num) {
+        let result = 1n;
+        for (let i = 2; i <= num; i++) {
+            result *= BigInt(i);
+        }
+        return result;
+    }
+    Numbers.Factorial = Factorial;
+    function Frequency(array) {
+        const freq = new Map();
+        array.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) : 0) + 1));
+        return freq;
+    }
+    Numbers.Frequency = Frequency;
+    function Permutations(array) {
+        // count repetitions
+        const freq = Frequency(array);
+        const repeats = Array.from(freq.values()).filter(val => val > 1);
+        console.log(array, freq, repeats);
+        let result = Factorial(array.length);
+        repeats.forEach(val => result /= Factorial(val));
+        return result;
+    }
+    Numbers.Permutations = Permutations;
+})(Numbers = exports.Numbers || (exports.Numbers = {}));
 var Pythagorean;
 (function (Pythagorean) {
     Pythagorean.RootTriple = {
@@ -80,7 +104,7 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
+})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
 var Util;
 (function (Util) {
     const fs = require('fs');
@@ -96,9 +120,8 @@ var Util;
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
     Util.csvToIntMatrix = csvToIntMatrix;
-})(Util || (exports.Util = Util = {}));
+})(Util = exports.Util || (exports.Util = {}));
 class PrimeNumbers {
-    primes;
     constructor(uptoN) {
         const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
@@ -153,9 +176,9 @@ class PrimeNumbers {
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
-    num = 1;
-    den = 1;
     constructor(numerator, denominator) {
+        this.num = 1;
+        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }

@@ -1,5 +1,5 @@
 
-import { Integer } from "./common";
+import { Integer, Numbers } from "./common";
 
 namespace E240 {
 
@@ -9,18 +9,20 @@ namespace E240 {
 
     const solutions: Integer[][] = [];
 
-    function find(diceSum: Integer, dicePos: Integer, diceNums: Integer[]): Integer {
+    function find(diceSum: Integer, dicePos: Integer, diceNums: Integer[]): bigint {
         const prevDiceVal: Integer = diceNums[dicePos - 1];
         if (dicePos == DiceCount - 1) {
             const solution: Integer = SumTarget - diceSum;
             if (prevDiceVal <= solution && solution <= FaceCount) {
-                // console.log(prevDiceVal, solution, FaceCount);
-                solutions.push(diceNums.concat(solution));
-                return 1;
+                const dices = diceNums.concat(solution);
+                solutions.push(dices);
+                const permutations: bigint = Numbers.Permutations(dices);
+                console.log(permutations, dices);
+                return permutations;
             }
-            return 0;
+            return 0n;
         }
-        let cnt: Integer = 0;
+        let cnt: bigint = 0n;
         for (let thisDiceVal = prevDiceVal; thisDiceVal <= FaceCount; thisDiceVal++) {
             const newDiceSum: Integer = diceSum + thisDiceVal;
             if (newDiceSum > SumTarget) continue;
@@ -29,15 +31,15 @@ namespace E240 {
         return cnt;
     }
 
-    export function run(): Integer {
+    export function run(): bigint {
         console.log(`Params :: DiceCount=${DiceCount} FaceCount=${FaceCount} SumTarget=${SumTarget}`);
-        let solutionCount: Integer = 0;
+        let solutionCount: bigint = 0n;
         for (let i = 1; i <= FaceCount; i++) {
             const diceNums: Integer[] = [i];
-            const result: Integer = find(1, 1, diceNums);
+            const result: bigint = find(1, 1, diceNums);
             solutionCount += result;
             console.log(result);
-    
+
         }
         console.log(solutions);
         return solutionCount;

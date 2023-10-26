@@ -62,6 +62,32 @@ export namespace Numbers {
         return result;
     }
 
+    export function Factorial(num: Integer): bigint {
+        let result: bigint = 1n;
+        for (let i = 2; i <= num; i++) {
+            result *= BigInt(i);
+        }
+        return result;
+    }
+
+    type FrequencyMap = Map<Integer, Integer>;
+
+    export function Frequency(array: Integer[]): FrequencyMap {
+        const freq: FrequencyMap = new Map();
+        array.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) as Integer : 0) + 1));
+        return freq;
+    }
+
+    export function Permutations(array: Integer[]): bigint {
+        // count repetitions
+        const freq: FrequencyMap = Frequency(array);
+        const repeats: Integer[] = Array.from(freq.values()).filter(val => val > 1);
+        console.log(array, freq, repeats);
+        let result: bigint = Factorial(array.length);
+        repeats.forEach(val => result /= Factorial(val));
+        return result;
+    }
+
 }
 
 

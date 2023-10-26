@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
 var E240;
 (function (E240) {
     const DiceCount = parseInt(process.argv[2] ?? "5");
@@ -11,21 +12,26 @@ var E240;
         if (dicePos == DiceCount - 1) {
             const solution = SumTarget - diceSum;
             if (prevDiceVal <= solution && solution <= FaceCount) {
-                // console.log(prevDiceVal, solution, FaceCount);
-                solutions.push(diceNums.concat(solution));
-                return 1;
+                const dices = diceNums.concat(solution);
+                solutions.push(dices);
+                const permutations = common_1.Numbers.Permutations(dices);
+                console.log(permutations, dices);
+                return permutations;
             }
-            return 0;
+            return 0n;
         }
-        let cnt = 0;
+        let cnt = 0n;
         for (let thisDiceVal = prevDiceVal; thisDiceVal <= FaceCount; thisDiceVal++) {
+            const newDiceSum = diceSum + thisDiceVal;
+            if (newDiceSum > SumTarget)
+                continue;
             cnt += find(diceSum + thisDiceVal, dicePos + 1, diceNums.concat(thisDiceVal));
         }
         return cnt;
     }
     function run() {
         console.log(`Params :: DiceCount=${DiceCount} FaceCount=${FaceCount} SumTarget=${SumTarget}`);
-        let solutionCount = 0;
+        let solutionCount = 0n;
         for (let i = 1; i <= FaceCount; i++) {
             const diceNums = [i];
             const result = find(1, 1, diceNums);
