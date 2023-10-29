@@ -5,7 +5,8 @@ var E240;
 (function (E240) {
     const DiceCount = parseInt(process.argv[2] ?? "5");
     const FaceCount = parseInt(process.argv[3] ?? "6");
-    const SumTarget = parseInt(process.argv[4] ?? "15");
+    const HighCount = parseInt(process.argv[4] ?? "3");
+    const SumTarget = parseInt(process.argv[5] ?? "15");
     const solutions = [];
     function find(diceSum, dicePos, diceNums) {
         const prevDiceVal = diceNums[dicePos - 1];
@@ -13,32 +14,32 @@ var E240;
             const solution = SumTarget - diceSum;
             if (prevDiceVal <= solution && solution <= FaceCount) {
                 const dices = diceNums.concat(solution);
-                solutions.push(dices);
+                // solutions.push(dices);
                 const permutations = common_1.Numbers.Permutations(dices);
-                console.log(permutations, dices);
+                // console.log(permutations, dices);
                 return permutations;
             }
             return 0n;
         }
         let cnt = 0n;
         for (let thisDiceVal = prevDiceVal; thisDiceVal <= FaceCount; thisDiceVal++) {
-            const newDiceSum = diceSum + thisDiceVal;
+            const newDiceSum = (dicePos >= DiceCount - HighCount) ? diceSum + thisDiceVal : 0;
             if (newDiceSum > SumTarget)
                 continue;
-            cnt += find(diceSum + thisDiceVal, dicePos + 1, diceNums.concat(thisDiceVal));
+            cnt += find(newDiceSum, dicePos + 1, diceNums.concat(thisDiceVal));
         }
         return cnt;
     }
     function run() {
-        console.log(`Params :: DiceCount=${DiceCount} FaceCount=${FaceCount} SumTarget=${SumTarget}`);
+        console.log(`Params :: DiceCount=${DiceCount} FaceCount=${FaceCount} HighCount=${HighCount} SumTarget=${SumTarget}`);
         let solutionCount = 0n;
         for (let i = 1; i <= FaceCount; i++) {
             const diceNums = [i];
-            const result = find(1, 1, diceNums);
+            const result = find(0, 1, diceNums);
             solutionCount += result;
-            console.log(result);
+            // console.log(result);
         }
-        console.log(solutions);
+        // console.log(solutions);
         return solutionCount;
     }
     E240.run = run;

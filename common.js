@@ -1,17 +1,59 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Fraction = exports.PrimeNumbers = exports.Util = exports.Pythagorean = exports.Numbers = void 0;
+exports.PowerNumber = exports.ComplexNumber = exports.Fraction = exports.PrimeNumbers = exports.Util = exports.Set = exports.Pythagorean = exports.Numbers = exports.PRIMES1000 = void 0;
+/**
+ * Primes are used extensively.
+ * Hardcoding the initial primes for efficiency.
+ */
+exports.PRIMES1000 = [
+    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
+    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
+    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+    401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+    503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599,
+    601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+    701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797,
+    809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887,
+    907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997
+];
+/**
+ * This namespace provides functions of general use.
+ * 1) Math functions NOT provided in the Math library.
+ * 2) Array functions not provided for Array.
+ */
 var Numbers;
 (function (Numbers) {
-    function GCD(n1, n2) {
-        while (n1) {
-            [n1, n2] = [n2 % n1, n1];
+    /**
+     * Returns the mathemtical GCD or HCF of the supplied integers.
+     * @nums array of integers
+     * @return Greatest Common Divisor of @nums
+     */
+    function GCD(...nums) {
+        function gcd(n1, n2) {
+            while (n1) {
+                [n1, n2] = [n2 % n1, n1];
+            }
+            return n2;
         }
-        return n2;
+        let lastGCD = nums[0];
+        for (let i = 1; i < nums.length && lastGCD > 1; i++) {
+            lastGCD = gcd(lastGCD, nums[i]);
+        }
+        return lastGCD;
     }
     Numbers.GCD = GCD;
-    function LCM(n1, n2) {
-        return n1 * n2 / GCD(n1, n2);
+    /**
+     * Returns the mathemtical LCM of the supplied integers.
+     * @nums array of integers
+     * @return Lowest Common Multiple of @nums
+     */
+    function LCM(...nums) {
+        let lastLCM = nums[0];
+        for (let i = 1; i < nums.length; i++) {
+            lastLCM = lastLCM * nums[i] / GCD(lastLCM, nums[i]);
+        }
+        return lastLCM;
     }
     Numbers.LCM = LCM;
     function SortAsc(nums) {
@@ -79,13 +121,12 @@ var Numbers;
         // count repetitions
         const freq = Frequency(array);
         const repeats = Array.from(freq.values()).filter(val => val > 1);
-        console.log(array, freq, repeats);
         let result = Factorial(array.length);
         repeats.forEach(val => result /= Factorial(val));
         return result;
     }
     Numbers.Permutations = Permutations;
-})(Numbers = exports.Numbers || (exports.Numbers = {}));
+})(Numbers || (exports.Numbers = Numbers = {}));
 var Pythagorean;
 (function (Pythagorean) {
     Pythagorean.RootTriple = {
@@ -104,7 +145,14 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
+})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
+var Set;
+(function (Set) {
+    function Powerset(nums) {
+        return nums.reduce((a, v) => a.concat(a.map((r) => [v].concat(r))), [[]]);
+    }
+    Set.Powerset = Powerset;
+})(Set || (exports.Set = Set = {}));
 var Util;
 (function (Util) {
     const fs = require('fs');
@@ -120,17 +168,18 @@ var Util;
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
     Util.csvToIntMatrix = csvToIntMatrix;
-})(Util = exports.Util || (exports.Util = {}));
+})(Util || (exports.Util = Util = {}));
 class PrimeNumbers {
+    primes;
     constructor(uptoN) {
-        const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
+        // const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
         // used to save memory to generate a greater number of primes
         const block = 64;
         const array_length = Math.ceil(uptoN / block);
         const sieve = new Uint32Array(array_length);
         // first pass goes through hard coded set of primes
-        for (const prime of hard_primes) {
+        for (const prime of exports.PRIMES1000.slice(1)) {
             const i1 = Math.floor(prime / block);
             const i1_rem_mask = 1 << (Math.floor((prime % block) / 2));
             if ((sieve[i1] & i1_rem_mask) === 0) {
@@ -144,7 +193,7 @@ class PrimeNumbers {
             }
         }
         // second pass goes through every odd number
-        const largest_hard_prime = hard_primes[hard_primes.length - 1];
+        const largest_hard_prime = exports.PRIMES1000[exports.PRIMES1000.length - 1];
         for (let n1 = largest_hard_prime + 2; n1 < uptoN; n1 += 2) {
             const i1 = Math.floor(n1 / block);
             const i1_rem_mask = 1 << (Math.floor((n1 % block) / 2));
@@ -159,7 +208,7 @@ class PrimeNumbers {
                 }
             }
         }
-        this.primes = [2, ...hard_primes].concat(primes_lst);
+        this.primes = exports.PRIMES1000.concat(primes_lst);
     }
     nThPrime(nthPrime) {
         return this.primes[nthPrime];
@@ -170,15 +219,32 @@ class PrimeNumbers {
     isPrime(candidatePrime) {
         return (this.indexOf(candidatePrime) >= 0);
     }
+    factorise(num) {
+        const root = Math.ceil(Math.sqrt(num));
+        const factors = [];
+        for (const prime of exports.PRIMES1000) {
+            if (prime > root) {
+                factors.push(num);
+                break;
+            }
+            while (num % prime === 0) {
+                factors.push(prime);
+                num /= prime;
+            }
+            if (num === 1)
+                break;
+        }
+        return factors;
+    }
     toArray() {
         return this.primes.concat([]);
     }
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
+    num = 1;
+    den = 1;
     constructor(numerator, denominator) {
-        this.num = 1;
-        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }
@@ -221,3 +287,116 @@ class Fraction {
     }
 }
 exports.Fraction = Fraction;
+class ComplexNumber {
+    real = 0n;
+    imaginary = 0n;
+    constructor(real, imaginary) {
+        this.real = real;
+        this.imaginary = imaginary;
+    }
+    realValue() {
+        return this.real;
+    }
+    imaginaryValue() {
+        return this.imaginary;
+    }
+    clone() {
+        return new ComplexNumber(this.real, this.imaginary);
+    }
+    conjugate() {
+        this.imaginary *= -1n;
+        return this;
+    }
+    multiply(complex) {
+        const tmp = this.real * complex.real - this.imaginary * complex.imaginary;
+        this.imaginary = this.real * complex.imaginary + this.imaginary * complex.real;
+        this.real = tmp;
+        return this;
+    }
+    toString() {
+        return `(${this.real}${this.imaginary < 0 ? "" : "+"}${this.imaginary}i)`;
+    }
+}
+exports.ComplexNumber = ComplexNumber;
+class PowerNumber {
+    val = 1;
+    num = new Map();
+    constructor(base = 1, power = 1) {
+        this.num.set(base, power);
+        this.val = Math.pow(base, power);
+    }
+    clone() {
+        return new PowerNumber().multiply(this);
+    }
+    multiply(pn) {
+        for (const [base, power] of pn.pairs()) {
+            const curPow = this.num.get(base) ?? 0;
+            this.num.set(base, curPow + power);
+        }
+        this.val *= pn.value();
+        return this;
+    }
+    divide(pn) {
+        for (const [base, power] of pn.pairs()) {
+            const curPow = this.num.get(base) ?? 0;
+            this.num.set(base, curPow - power);
+        }
+        this.val /= pn.value();
+        return this;
+    }
+    mul(base, power) {
+        const curPow = this.num.get(base) ?? 0;
+        this.num.set(base, curPow + power);
+        return this;
+    }
+    div(base, power) {
+        const curPow = this.num.get(base) ?? 0;
+        this.num.set(base, curPow - power);
+        return this;
+    }
+    mulBases(bases) {
+        for (const base of bases) {
+            const curPow = this.num.get(base) ?? 0;
+            this.num.set(base, curPow + 1);
+        }
+        return this;
+    }
+    divisibleBases(bases) {
+        for (const base of bases) {
+            if (base === 1)
+                continue;
+            const curPow = this.num.get(base) ?? 0;
+            if (curPow < 1)
+                return false;
+        }
+        return true;
+    }
+    divBases(bases) {
+        for (const base of bases) {
+            const curPow = this.num.get(base) ?? 0;
+            this.num.set(base, curPow - 1);
+        }
+        return this;
+    }
+    getPower(base) {
+        return this.num.get(base);
+    }
+    value() {
+        return this.val;
+    }
+    pairs() {
+        return new Map(this.num);
+    }
+    toString() {
+        let str = "";
+        for (const [base, power] of this.num) {
+            if (base < 2)
+                continue;
+            if (power == 0)
+                continue;
+            str += ` ${base}^(${power})`;
+        }
+        return `( ${this.val} =${str} )`;
+    }
+}
+exports.PowerNumber = PowerNumber;
