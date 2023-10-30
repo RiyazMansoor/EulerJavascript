@@ -1,17 +1,158 @@
 
-import { Integer, Numbers, PowerNumber, Prime, PrimeNumbers } from "./common";
+import { Integer, Numbers, PRIMES1000, PowerNumber, Prime, PrimeNumbers } from "./common";
 
 namespace E308 {
 
     const TargetPrimePower: Integer = 104743;
 
+    const IND02: Integer = 0;
+    const IND03: Integer = 1;
+    const IND05: Integer = 2;
+    const IND07: Integer = 3;
+    const IND11: Integer = 4;
+    const IND13: Integer = 5;
+    const IND17: Integer = 6;
+    const IND19: Integer = 7;
+    // const IND23: Integer = 8;
+    // const IND29: Integer = 9;
+
+    const PowerNum: Integer[] = new Array(8).fill(0);
+
+    function PowerNumString(): string {
+        let str: string = "";
+        for (let i = 0; i < PowerNum.length; i++) {
+            str += `${PRIMES1000[i]}^(${PowerNum[i]}) `;
+        }
+        return str;
+    }
+
+    export function stepCount(fracIndex: Integer): void {
+        let cnt: Integer = 0;
+        while (cnt < 1e3) {
+            console.log(`cnt=${cnt} frac=${fracIndex} ${PowerNumString()}`);
+            switch (fracIndex) {
+                case 0:
+                    const pow07: Integer = PowerNum[IND07];
+                    const pow13: Integer = PowerNum[IND13];
+                    if (pow07 > 0 && pow13 > 0) {
+                        if (pow07 <= pow13) {
+                            // this counts the steps for the repeated 0-1-0-1 cycles
+                            const steps: Integer = pow07;
+                            PowerNum[IND02] += steps;
+                            PowerNum[IND03] += steps;
+                            PowerNum[IND05] -= steps;
+                            PowerNum[IND07] -= steps;
+                            // frac 9
+                            PowerNum[IND11] += 1;
+                            PowerNum[IND13] -= 1;
+                            fracIndex = 4;
+                            cnt += 2 * steps + 1;
+                        } else {
+                            // this counts the steps for the repeated 0-1-0-1 cycles (plus on 0 execution)
+                            const steps: Integer = pow13;
+                            PowerNum[IND02] += steps;
+                            PowerNum[IND03] += steps;
+                            PowerNum[IND05] -= steps;
+                            PowerNum[IND07] -= steps;
+                            fracIndex = 0;
+                            cnt += steps;
+                        }
+                    } else {
+                        PowerNum[IND07] -= 1;
+                        PowerNum[IND13] -= 1;
+                        PowerNum[IND17] += 1;
+                        if (PowerNum[IND03] > 0 && PowerNum[IND17] > 0) {
+                            fracIndex = 2;
+                        } else if (PowerNum[IND17] > 0) {
+                            fracIndex = 8;
+                        } else {
+                            throw `case 0 :: ${PowerNum}`;
+                        }
+                        cnt += 1;
+                    }
+                    break;
+                case 2: {
+                    // frac 2
+                    PowerNum[IND19] += 1;
+                    PowerNum[IND13] -= 1;
+                    PowerNum[IND17] -= 1;
+                    // cycle of frac 3-6-3-6
+                    const steps: Integer = PowerNum[IND02];
+                    PowerNum[IND05] += steps;
+                    PowerNum[IND02] -= steps;
+                    // frac 7
+                    PowerNum[IND07] += 1;
+                    PowerNum[IND11] += 1;
+                    PowerNum[IND19] -= 1;
+                    if (PowerNum[IND03] > 0 && PowerNum[IND11] > 0) {
+                        fracIndex = 4;
+                    } else if (PowerNum[IND11] > 0) {
+                        PowerNum[IND11] -= 1;
+                        PowerNum[IND13] += 1;
+                        fracIndex = 0;
+                        cnt += 1;
+                    }
+                    cnt += steps + 1;
+                }
+                    break;
+                case 4:
+                    {
+                        // this counts the steps for the repeated 4-5-4-5 cycles
+                        const steps: Integer = PowerNum[IND03];
+                        PowerNum[IND03] -= steps;
+                        PowerNum[IND07] += steps;
+                        // goes to frac 10;
+                        PowerNum[IND11] -= 1;
+                        PowerNum[IND13] += 1;
+                        fracIndex = 0;
+                        cnt += 2 * steps + 1;
+                    }
+                    break;
+                case 8:
+                    PowerNum[IND17] -= 1;
+                    fracIndex = 11;
+                    cnt++;
+                    if (PowerNum.slice(1).every(v => v === 0)) {
+                        console.log(`cnt=${cnt} power2=${PowerNum[IND02]}`);
+                    }
+                    break;
+                case 11:
+                    // frac 11
+                    const steps11: Integer = PowerNum[IND02];
+                    PowerNum[IND02] -= steps11;
+                    PowerNum[IND03] += steps11;
+                    PowerNum[IND05] += steps11;
+                    cnt += steps11;
+                    // frac 12 (conditional)
+                    const steps12: Integer = PowerNum[IND07];
+                    if (steps12 > 0) {
+                        PowerNum[IND07] -= steps12;
+                        cnt += steps12;
+                    }
+                    // frac 13
+                    PowerNum[IND05] += 1;
+                    PowerNum[IND11] += 1;
+                    cnt += 1;
+                    fracIndex = 4;
+                    break;
+                default:
+                    throw `error ${cnt} ${PowerNum}`;
+            }
+        }
+    }
+
+    export function run(): void {
+        PowerNum[IND02] = 1;
+        stepCount(11);
+    }
+
     const primes: PrimeNumbers = new PrimeNumbers(1000);
 
-    const numers: Integer[] = [ 17, 78, 19, 23, 29, 77, 95, 77,  1, 11, 13, 15, 1, 55 ] ;
-    const denoms: Integer[]  = [ 91, 85, 51, 38, 33, 29, 23, 19, 17, 13, 11,  2, 7,  1 ] ;
+    const numers: Integer[] = [17, 78, 19, 23, 29, 77, 95, 77, 1, 11, 13, 15, 1, 55];
+    const denoms: Integer[] = [91, 85, 51, 38, 33, 29, 23, 19, 17, 13, 11, 2, 7, 1];
 
-    const facNumers: Prime[][] = numers.map( n => primes.factorise(n) );
-    const facDenoms: Prime[][] = denoms.map( n => primes.factorise(n) );
+    const facNumers: Prime[][] = numers.map(n => primes.factorise(n));
+    const facDenoms: Prime[][] = denoms.map(n => primes.factorise(n));
 
 
     export function brute(): void {
@@ -19,7 +160,7 @@ namespace E308 {
         for (let i = 0; i < numers.length; i++) {
             paths.set(i, new Set());
         }
-        const pn: PowerNumber = new PowerNumber(2, 1); 
+        const pn: PowerNumber = new PowerNumber(2, 1);
         let lastInd: Integer = -1;
         let cnt: Integer = 0;
         while (cnt < 1e8) {
@@ -42,27 +183,8 @@ namespace E308 {
         }
     }
 
-    /**
-     *  0 => 1,2,8
-        1 => 0,9
-        2 => 3
-        3 => 6
-        4 => 5
-        5 => 4,10
-        6 => 3,7
-        7 => 4,10
-        8 => 11
-        9 => 4
-        10 => 0
-        11 => 11,12,13
-        12 => 12,13
-        13 => 4
 
-        3^-1 17^-1 2^-1 23^+1
-for n in 2^n
-2^(-n) 5^(+n)
-7^+1  11^+1  19^-1
-     */
+
 
     const f2PN: PowerNumber = new PowerNumber().mul(3, -1).mul(17, -1).mul(2, -1).mul(23, 1).mul(7, 1).mul(11, 1).mul(19, -1);
 
@@ -75,18 +197,18 @@ for n in 2^n
             switch (frac) {
                 case 0:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
-                    frac = [1,2,8].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [1, 2, 8].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 case 1:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
-                    frac = [0,9].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [0, 9].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 case 2:
                     const diffPow: Integer = pownum.getPower(2) - 1;
                     f2PN.mul(2, -diffPow).mul(5, diffPow);
                     pownum.multiply(f2PN);
                     cnt += 3 + 2 * diffPow;
-                    frac = [4,10].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [4, 10].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 // case 3:
                 //     frac = 6;
@@ -97,7 +219,7 @@ for n in 2^n
                     break;
                 case 5:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
-                    frac = [4,10].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [4, 10].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 // case 6:
                 //     frac = [3,7].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
@@ -135,11 +257,11 @@ for n in 2^n
                     break;
                 case 11:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
-                    frac = [11,12,13].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [11, 12, 13].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 case 12:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
-                    frac = [12,13].find( f => pownum.divisibleBases(facDenoms[f]) ) as Integer;
+                    frac = [12, 13].find(f => pownum.divisibleBases(facDenoms[f])) as Integer;
                     break;
                 case 13:
                     pownum.mulBases(facNumers[frac]).divBases(facDenoms[frac]);
@@ -150,12 +272,6 @@ for n in 2^n
         }
     }
 
-    export function run(): void {
-        for (let i = 0; i < numers.length; i++) {
-            console.log(`(${facNumers[i]})/(${facDenoms[i]})`);
-        }
-        wheel(new PowerNumber(2,1), 11);
-    }
 
 }
 

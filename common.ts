@@ -10,12 +10,12 @@ export type Integer = number;
 export type SortedIntegerArray = Integer[];
 
 /**
- * Easier identification of integers.
+ * Easier identification of prime number integers.
  */
 export type Prime = Integer;
 
 /**
- * Easier identifying an array of sorted integers.
+ * Easier identifying an array of sorted prime integers.
  */
 export type SortedPrimeArray = Prime[];
 
@@ -24,23 +24,23 @@ export type SortedPrimeArray = Prime[];
  * Hardcoding the initial primes for efficiency.
  */
 export const PRIMES1000: Integer[] = [
-    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 
-    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 
-    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 
-    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 
-    401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 
-    503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 
-    601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 
-    701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 
-    809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 
-    907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997    
+    2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+    101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
+    211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
+    307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+    401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+    503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599,
+    601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+    701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797,
+    809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887,
+    907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997
 ];
 
 
 /**
  * This namespace provides functions of general use.
  * 1) Math functions NOT provided in the Math library.
- * 2) Array functions not provided for Array.
+ * 2) Array functions not provided for in Array.
  */
 export namespace Numbers {
 
@@ -76,22 +76,48 @@ export namespace Numbers {
         return lastLCM;
     }
 
+    /**
+     * Ascending sorts an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns array sorted in ascending order
+     */
     export function SortAsc(nums: Integer[]): SortedIntegerArray {
         return nums.sort((a, b) => a - b);
     }
 
+    /**
+     * Descending sorts an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns array sorted in descending order
+     */
     export function SortDsc(nums: Integer[]): SortedIntegerArray {
         return nums.sort((a, b) => b - a);
     }
 
+    /**
+     * Returns the product of an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns product of array numbers
+     */
     export function Product(nums: Integer[]): Integer {
         return nums.reduce((pv, cv) => pv * cv, 1);
     }
 
+    /**
+     * Returns the sum of an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns sum of array numbers
+     */
     export function Sum(nums: Integer[]): Integer {
         return nums.reduce((pv, cv) => pv + cv, 0);
     }
 
+    /**
+     * Returns the index of the <b>target</b> within the array.
+     * @param nums array of ascending sorted integers
+     * @param target number to find
+     * @returns index of <b>target</b> or negative if not found
+     */
     export function binarySearch(nums: SortedIntegerArray, target: Integer): Integer {
         let l_index: number = 0;
         let r_index: number = nums.length - 1;
@@ -112,6 +138,11 @@ export namespace Numbers {
         return -1;
     }
 
+    /**
+     * Returns the transposed double array.
+     * @param matrix double array to transpose
+     * @returns transposed double array
+     */
     export function Transpose(matrix: Integer[][]): Integer[][] {
         let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length).fill(0));
         for (let i = 0; i < result.length; i++) {
@@ -122,6 +153,11 @@ export namespace Numbers {
         return result;
     }
 
+    /**
+     * Returns the factorial of a <b>Integer</b> number.
+     * @param num number to calculate factorial
+     * @returns factorial of <b>num</b>
+     */
     export function Factorial(num: Integer): bigint {
         let result: bigint = 1n;
         for (let i = 2; i <= num; i++) {
@@ -130,19 +166,33 @@ export namespace Numbers {
         return result;
     }
 
-    type FrequencyMap = Map<Integer, Integer>;
+    /**
+     * Frequence map of number occurence.
+     */
+    export type FrequencyMap = Map<Integer, Integer>;
 
-    export function Frequency(array: Integer[]): FrequencyMap {
+    /**
+     * Returns the frequence of occurence.
+     * @param nums array of integers
+     * @returns frequence of occurrence
+     */
+    export function Frequency(nums: Integer[]): FrequencyMap {
         const freq: FrequencyMap = new Map();
-        array.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) as Integer : 0) + 1));
+        nums.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) as Integer : 0) + 1));
         return freq;
     }
 
-    export function Permutations(array: Integer[]): bigint {
+    /**
+     * Returns the number of unique permutations for <b>nums</b> array.
+     * That is, repeated elements in <b>nums</b> are discounted.
+     * @param nums array of integers
+     * @returns returns the number of unique permutations
+     */
+    export function Permutations(nums: Integer[]): bigint {
         // count repetitions
-        const freq: FrequencyMap = Frequency(array);
+        const freq: FrequencyMap = Frequency(nums);
         const repeats: Integer[] = Array.from(freq.values()).filter(val => val > 1);
-        let result: bigint = Factorial(array.length);
+        let result: bigint = Factorial(nums.length);
         repeats.forEach(val => result /= Factorial(val));
         return result;
     }
@@ -150,39 +200,59 @@ export namespace Numbers {
 }
 
 
-
+/**
+ * This namespace provides types, constants and functions relating to the Pythagorean Theorem.
+ */
 export namespace Pythagorean {
 
+    /**
+     * Type definitions for a pythagorean triple.
+     */
     export type Triple = {
-        a: number,
-        b: number,
-        c: number
+        a: Integer,
+        b: Integer,
+        c: Integer
     }
 
+    /**
+     * Root triple for all pythagorean triples.
+     */
     export const RootTriple: Triple = {
         a: 3,
         b: 4,
         c: 5
     }
 
-    // returns the next 3 primitive pythagorean triples
+    /**
+     * Returns the next 3 triples to the supplied <b>triple</b>.
+     * @param triple pythagorean triple
+     * @returns returns the next 3 triples
+     */
     export function NextTriples(triple: Triple): Triple[] {
         const { a, b, c } = triple;
         const a2 = 2 * a, b2 = 2 * b, c2 = 2 * c, c3 = 3 * c;
         return [
-            { a: (a - b2 + c2), b: (a2 - b + c2), c: (a2 - b2 + c3) },
-            { a: (a + b2 + c2), b: (a2 + b + c2), c: (a2 + b2 + c3) },
+            { a: ( a - b2 + c2), b: ( a2 - b + c2), c: ( a2 - b2 + c3) },
+            { a: ( a + b2 + c2), b: ( a2 + b + c2), c: ( a2 + b2 + c3) },
             { a: (-a + b2 + c2), b: (-a2 + b + c2), c: (-a2 + b2 + c3) },
         ];
     }
 
-
 }
 
+/**
+ * This namespace provides types, constants and functions relating to <b>Set</b> operations.
+ */
 export namespace Set {
 
+    /**
+     * Returns the powerset of supplied array.
+     * TODO: type firming for Integer
+     * @param nums array of integers
+     * @returns powerset of <b>nums</b>
+     */
     export function Powerset(nums: any[]): any[][] {
-        return nums.reduce( (a, v) => a.concat( a.map( (r: any) => [v].concat(r) ) ), [[]] );
+        return nums.reduce((a, v) => a.concat(a.map((r: any) => [v].concat(r))), [[]]);
     }
 
 }
@@ -271,7 +341,7 @@ export class PrimeNumbers {
             }
             while (num % prime === 0) {
                 factors.push(prime);
-                num  /= prime;
+                num /= prime;
             }
             if (num === 1) break;
         }
@@ -376,7 +446,7 @@ export class ComplexNumber {
     }
 
     toString() {
-        return `(${this.real}${this.imaginary < 0 ? "": "+"}${this.imaginary}i)`;
+        return `(${this.real}${this.imaginary < 0 ? "" : "+"}${this.imaginary}i)`;
     }
 
 }

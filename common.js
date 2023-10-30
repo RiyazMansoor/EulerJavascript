@@ -20,7 +20,7 @@ exports.PRIMES1000 = [
 /**
  * This namespace provides functions of general use.
  * 1) Math functions NOT provided in the Math library.
- * 2) Array functions not provided for Array.
+ * 2) Array functions not provided for in Array.
  */
 var Numbers;
 (function (Numbers) {
@@ -56,22 +56,48 @@ var Numbers;
         return lastLCM;
     }
     Numbers.LCM = LCM;
+    /**
+     * Ascending sorts an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns array sorted in ascending order
+     */
     function SortAsc(nums) {
         return nums.sort((a, b) => a - b);
     }
     Numbers.SortAsc = SortAsc;
+    /**
+     * Descending sorts an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns array sorted in descending order
+     */
     function SortDsc(nums) {
         return nums.sort((a, b) => b - a);
     }
     Numbers.SortDsc = SortDsc;
+    /**
+     * Returns the product of an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns product of array numbers
+     */
     function Product(nums) {
         return nums.reduce((pv, cv) => pv * cv, 1);
     }
     Numbers.Product = Product;
+    /**
+     * Returns the sum of an array of <b>Integer</b> numbers.
+     * @param nums array of integers
+     * @returns sum of array numbers
+     */
     function Sum(nums) {
         return nums.reduce((pv, cv) => pv + cv, 0);
     }
     Numbers.Sum = Sum;
+    /**
+     * Returns the index of the <b>target</b> within the array.
+     * @param nums array of ascending sorted integers
+     * @param target number to find
+     * @returns index of <b>target</b> or negative if not found
+     */
     function binarySearch(nums, target) {
         let l_index = 0;
         let r_index = nums.length - 1;
@@ -93,6 +119,11 @@ var Numbers;
         return -1;
     }
     Numbers.binarySearch = binarySearch;
+    /**
+     * Returns the transposed double array.
+     * @param matrix double array to transpose
+     * @returns transposed double array
+     */
     function Transpose(matrix) {
         let result = new Array(matrix[0].length).fill(0).map(() => new Array(matrix.length).fill(0));
         for (let i = 0; i < result.length; i++) {
@@ -103,6 +134,11 @@ var Numbers;
         return result;
     }
     Numbers.Transpose = Transpose;
+    /**
+     * Returns the factorial of a <b>Integer</b> number.
+     * @param num number to calculate factorial
+     * @returns factorial of <b>num</b>
+     */
     function Factorial(num) {
         let result = 1n;
         for (let i = 2; i <= num; i++) {
@@ -111,30 +147,51 @@ var Numbers;
         return result;
     }
     Numbers.Factorial = Factorial;
-    function Frequency(array) {
+    /**
+     * Returns the frequence of occurence.
+     * @param nums array of integers
+     * @returns frequence of occurrence
+     */
+    function Frequency(nums) {
         const freq = new Map();
-        array.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) : 0) + 1));
+        nums.forEach(val => freq.set(val, (freq.has(val) ? freq.get(val) : 0) + 1));
         return freq;
     }
     Numbers.Frequency = Frequency;
-    function Permutations(array) {
+    /**
+     * Returns the number of unique permutations for <b>nums</b> array.
+     * That is, repeated elements in <b>nums</b> are discounted.
+     * @param nums array of integers
+     * @returns returns the number of unique permutations
+     */
+    function Permutations(nums) {
         // count repetitions
-        const freq = Frequency(array);
+        const freq = Frequency(nums);
         const repeats = Array.from(freq.values()).filter(val => val > 1);
-        let result = Factorial(array.length);
+        let result = Factorial(nums.length);
         repeats.forEach(val => result /= Factorial(val));
         return result;
     }
     Numbers.Permutations = Permutations;
-})(Numbers || (exports.Numbers = Numbers = {}));
+})(Numbers = exports.Numbers || (exports.Numbers = {}));
+/**
+ * This namespace provides types, constants and functions relating to the Pythagorean Theorem.
+ */
 var Pythagorean;
 (function (Pythagorean) {
+    /**
+     * Root triple for all pythagorean triples.
+     */
     Pythagorean.RootTriple = {
         a: 3,
         b: 4,
         c: 5
     };
-    // returns the next 3 primitive pythagorean triples
+    /**
+     * Returns the next 3 triples to the supplied <b>triple</b>.
+     * @param triple pythagorean triple
+     * @returns returns the next 3 triples
+     */
     function NextTriples(triple) {
         const { a, b, c } = triple;
         const a2 = 2 * a, b2 = 2 * b, c2 = 2 * c, c3 = 3 * c;
@@ -145,14 +202,23 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
+})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
+/**
+ * This namespace provides types, constants and functions relating to <b>Set</b> operations.
+ */
 var Set;
 (function (Set) {
+    /**
+     * Returns the powerset of supplied array.
+     * TODO: type firming for Integer
+     * @param nums array of integers
+     * @returns powerset of <b>nums</b>
+     */
     function Powerset(nums) {
         return nums.reduce((a, v) => a.concat(a.map((r) => [v].concat(r))), [[]]);
     }
     Set.Powerset = Powerset;
-})(Set || (exports.Set = Set = {}));
+})(Set = exports.Set || (exports.Set = {}));
 var Util;
 (function (Util) {
     const fs = require('fs');
@@ -168,9 +234,8 @@ var Util;
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
     Util.csvToIntMatrix = csvToIntMatrix;
-})(Util || (exports.Util = Util = {}));
+})(Util = exports.Util || (exports.Util = {}));
 class PrimeNumbers {
-    primes;
     constructor(uptoN) {
         // const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
@@ -242,9 +307,9 @@ class PrimeNumbers {
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
-    num = 1;
-    den = 1;
     constructor(numerator, denominator) {
+        this.num = 1;
+        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }
@@ -288,9 +353,9 @@ class Fraction {
 }
 exports.Fraction = Fraction;
 class ComplexNumber {
-    real = 0n;
-    imaginary = 0n;
     constructor(real, imaginary) {
+        this.real = 0n;
+        this.imaginary = 0n;
         this.real = real;
         this.imaginary = imaginary;
     }
@@ -319,9 +384,9 @@ class ComplexNumber {
 }
 exports.ComplexNumber = ComplexNumber;
 class PowerNumber {
-    val = 1;
-    num = new Map();
     constructor(base = 1, power = 1) {
+        this.val = 1;
+        this.num = new Map();
         this.num.set(base, power);
         this.val = Math.pow(base, power);
     }
