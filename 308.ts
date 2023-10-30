@@ -71,29 +71,30 @@ namespace E308 {
                         cnt += 1;
                     }
                     break;
-                case 2: {
-                    // frac 2
-                    PowerNum[IND19] += 1;
-                    PowerNum[IND13] -= 1;
-                    PowerNum[IND17] -= 1;
-                    // cycle of frac 3-6-3-6
-                    const steps: Integer = PowerNum[IND02];
-                    PowerNum[IND05] += steps;
-                    PowerNum[IND02] -= steps;
-                    // frac 7
-                    PowerNum[IND07] += 1;
-                    PowerNum[IND11] += 1;
-                    PowerNum[IND19] -= 1;
-                    if (PowerNum[IND03] > 0 && PowerNum[IND11] > 0) {
-                        fracIndex = 4;
-                    } else if (PowerNum[IND11] > 0) {
-                        PowerNum[IND11] -= 1;
-                        PowerNum[IND13] += 1;
-                        fracIndex = 0;
-                        cnt += 1;
+                case 2: 
+                    {
+                        // frac 2
+                        PowerNum[IND19] += 1;
+                        PowerNum[IND13] -= 1;
+                        PowerNum[IND17] -= 1;
+                        // cycle of frac 3-6-3-6
+                        const steps: Integer = PowerNum[IND02];
+                        PowerNum[IND05] += steps;
+                        PowerNum[IND02] -= steps;
+                        // frac 7
+                        PowerNum[IND07] += 1;
+                        PowerNum[IND11] += 1;
+                        PowerNum[IND19] -= 1;
+                        if (PowerNum[IND03] > 0 && PowerNum[IND11] > 0) {
+                            fracIndex = 4;
+                        } else if (PowerNum[IND11] > 0) {
+                            PowerNum[IND11] -= 1;
+                            PowerNum[IND13] += 1;
+                            fracIndex = 0;
+                            cnt += 1;
+                        }
+                        cnt += steps + 1;
                     }
-                    cnt += steps + 1;
-                }
                     break;
                 case 4:
                     {
@@ -109,31 +110,34 @@ namespace E308 {
                     }
                     break;
                 case 8:
-                    PowerNum[IND17] -= 1;
-                    fracIndex = 11;
-                    cnt++;
-                    if (PowerNum.slice(1).every(v => v === 0)) {
-                        console.log(`cnt=${cnt} power2=${PowerNum[IND02]}`);
+                    {
+                        PowerNum[IND17] -= 1;
+                        fracIndex = 11;
+                        cnt++;
+                        if (PowerNum.slice(1).every(v => v === 0)) {
+                            console.log(`cnt=${cnt} power2=${PowerNum[IND02]}`);
+                        }
                     }
                     break;
                 case 11:
-                    // frac 11
-                    const steps11: Integer = PowerNum[IND02];
-                    PowerNum[IND02] -= steps11;
-                    PowerNum[IND03] += steps11;
-                    PowerNum[IND05] += steps11;
-                    cnt += steps11;
-                    // frac 12 (conditional)
-                    const steps12: Integer = PowerNum[IND07];
-                    if (steps12 > 0) {
-                        PowerNum[IND07] -= steps12;
-                        cnt += steps12;
+                    {
+                        // frac 11
+                        const steps11: Integer = PowerNum[IND02];
+                        PowerNum[IND02] -= steps11;
+                        PowerNum[IND03] += steps11;
+                        PowerNum[IND05] += steps11;
+                        // frac 12 (conditional)
+                        const steps12: Integer = PowerNum[IND07];
+                        if (steps12 > 0) {
+                            PowerNum[IND07] -= steps12;
+                            cnt += steps12;
+                        }
+                        // frac 13
+                        PowerNum[IND05] += 1;
+                        PowerNum[IND11] += 1;
+                        fracIndex = 4;
+                        cnt += steps11 + 1;
                     }
-                    // frac 13
-                    PowerNum[IND05] += 1;
-                    PowerNum[IND11] += 1;
-                    cnt += 1;
-                    fracIndex = 4;
                     break;
                 default:
                     throw `error ${cnt} ${PowerNum}`;

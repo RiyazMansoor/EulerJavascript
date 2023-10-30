@@ -45,7 +45,7 @@ namespace E816 {
     }
 
     function find(lo: Integer, hi: Integer): number {
-        
+        return 0;
     }
 
 }

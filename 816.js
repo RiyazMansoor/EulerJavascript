@@ -17,5 +17,29 @@ var E816;
         }
     }
     E816.findCycle = findCycle;
+    function distance(p1, p2) {
+        const xdiff = p1.x - p2.x;
+        const ydiff = p1.y - p2.y;
+        return Math.sqrt(xdiff * xdiff + ydiff * ydiff);
+    }
+    function getPointsSortedX(num) {
+        const START = 290797;
+        const MODULO = 50515093;
+        let result = START;
+        result = (result * result) % MODULO;
+        const points = [{ x: START, y: result }];
+        for (let n = 1; n < num; n++) {
+            result = (result * result) % MODULO;
+            const xv = result;
+            result = (result * result) % MODULO;
+            const yv = result;
+            points.push({ x: xv, y: yv });
+        }
+        points.sort((a, b) => a.x - b.x);
+        return points;
+    }
+    function find(lo, hi) {
+        return 0;
+    }
 })(E816 || (E816 = {}));
 E816.findCycle();
