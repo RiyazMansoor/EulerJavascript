@@ -39,7 +39,6 @@ var E816;
         return points;
     }
     function find(lo, hi) {
-        return 0;
     }
 })(E816 || (E816 = {}));
 E816.findCycle();
