@@ -7,7 +7,27 @@ namespace E700 {
     const EULERDOB: bigint = 1504170715041707n;
     const MODULO: bigint = 4503599627370517n;
 
-    export function run(): bigint {
+    const argv: bigint = BigInt(parseInt(process.argv[2] ?? "1000"));
+
+    function seek(): void {
+        const REM = 111054189n;
+        // for (let r = REM -1n; r > 0; r++) {
+        for (const r of [428410324n, REM, REM - 1n]) {
+            for (let k = 1n; k < argv; k++) {
+                if ((k * MODULO + r) % EULERDOB === 0n) {
+                    const n = (k * MODULO + r) / EULERDOB;
+                    console.log(`k=${k} n=${n}`);
+                    break;
+                }
+            }
+        }
+    }
+
+    export function run(): void {
+        seek();
+    }
+
+    export function brute(): bigint {
         let sum: bigint = EULERDOB;
         let min: bigint = EULERDOB;
         let cnt: bigint = 2n;
