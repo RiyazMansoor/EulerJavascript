@@ -9,8 +9,9 @@ namespace E845 {
 
     function count(tmplate: Integer[], digits: Integer): Integer[] {
         for (let i = 0; i < 10; i++) {
-            
+
         }
+        return [];
     }
 
 }
