@@ -1,4 +1,6 @@
 
+// answer cnt=1539669807660924 power2=104743
+
 import { Integer, Numbers, PRIMES1000, PowerNumber, Prime, PrimeNumbers } from "./common";
 
 namespace E308 {
@@ -13,10 +15,10 @@ namespace E308 {
     const IND13: Integer = 5;
     const IND17: Integer = 6;
     const IND19: Integer = 7;
-    // const IND23: Integer = 8;
-    // const IND29: Integer = 9;
+    const IND23: Integer = 8;
+    const IND29: Integer = 9;
 
-    const PowerNum: Integer[] = new Array(8).fill(0);
+    const PowerNum: Integer[] = new Array(10).fill(0);
 
     function PowerNumString(): string {
         let str: string = "";
@@ -26,17 +28,90 @@ namespace E308 {
         return str;
     }
 
-    export function stepCount(fracIndex: Integer): void {
+    export function bruteCount(): void {
         let cnt: Integer = 0;
         while (cnt < 1e3) {
-            console.log(`cnt=${cnt} frac=${fracIndex} ${PowerNumString()}`);
+            if (PowerNum[IND07] > 0 && PowerNum[IND13] > 0) {
+                console.log(`cnt=${cnt} frac=0 ${PowerNumString()}`);
+                PowerNum[IND17]++;                        
+                PowerNum[IND07]--;
+                PowerNum[IND13]--;
+            } else if (PowerNum[IND05] > 0 && PowerNum[IND17] > 0) {
+                console.log(`cnt=${cnt} frac=1 ${PowerNumString()}`);
+                PowerNum[IND02]++;                        
+                PowerNum[IND03]++;                        
+                PowerNum[IND13]++;                        
+                PowerNum[IND05]--;                        
+                PowerNum[IND17]--;                        
+            } else if (PowerNum[IND03] > 0 && PowerNum[IND17] > 0) {
+                console.log(`cnt=${cnt} frac=2 ${PowerNumString()}`);
+                PowerNum[IND19]++;                        
+                PowerNum[IND03]--;                        
+                PowerNum[IND17]--;                        
+            } else if (PowerNum[IND02] > 0 && PowerNum[IND19] > 0) {
+                console.log(`cnt=${cnt} frac=3 ${PowerNumString()}`);
+                PowerNum[IND23]++;                        
+                PowerNum[IND02]--;                        
+                PowerNum[IND19]--;                        
+            } else if (PowerNum[IND03] > 0 && PowerNum[IND11] > 0) {
+                console.log(`cnt=${cnt} frac=4 ${PowerNumString()}`);
+                PowerNum[IND29]++;                        
+                PowerNum[IND03]--;                        
+                PowerNum[IND11]--;                        
+            } else if (PowerNum[IND29] > 0) {
+                console.log(`cnt=${cnt} frac=5 ${PowerNumString()}`);
+                PowerNum[IND07]++;                        
+                PowerNum[IND11]++;                        
+                PowerNum[IND29]--;   
+            } else if (PowerNum[IND23] > 0) {
+                console.log(`cnt=${cnt} frac=6 ${PowerNumString()}`);
+                PowerNum[IND05]++;                        
+                PowerNum[IND19]++;                        
+                PowerNum[IND23]--;            
+            } else if (PowerNum[IND19] > 0) {
+                console.log(`cnt=${cnt} frac=7 ${PowerNumString()}`);
+                PowerNum[IND07]++;                        
+                PowerNum[IND11]++;                        
+                PowerNum[IND19]--;            
+            } else if (PowerNum[IND17] > 0) {
+                console.log(`cnt=${cnt} frac=8 ${PowerNumString()}`);
+                PowerNum[IND17]--;  
+            } else if (PowerNum[IND13] > 0) {
+                console.log(`cnt=${cnt} frac=9 ${PowerNumString()}`);
+                PowerNum[IND11]++;                        
+                PowerNum[IND13]--;            
+            } else if (PowerNum[IND11] > 0) {
+                console.log(`cnt=${cnt} frac=10 ${PowerNumString()}`);
+                PowerNum[IND13]++;                        
+                PowerNum[IND11]--;            
+            } else if (PowerNum[IND02] > 0) {
+                console.log(`cnt=${cnt} frac=11 ${PowerNumString()}`);
+                PowerNum[IND03]++;                        
+                PowerNum[IND05]++;                        
+                PowerNum[IND02]--;            
+            } else if (PowerNum[IND07] > 0) {
+                console.log(`cnt=${cnt} frac=12 ${PowerNumString()}`);
+                PowerNum[IND07]--;              
+            } else {
+                console.log(`cnt=${cnt} frac=13 ${PowerNumString()}`);
+                PowerNum[IND05]++;                        
+                PowerNum[IND11]++;    
+            }
+            cnt++;                
+        }
+    }
+
+    export function stepCount(fracIndex: Integer): void {
+        let power2: Integer = -1;
+        let cnt: bigint = 0n;
+        while (power2 < TargetPrimePower) {
+            // console.log(`cnt=${cnt} frac=${fracIndex} ${PowerNumString()}`);
             switch (fracIndex) {
                 case 0:
-                    const pow07: Integer = PowerNum[IND07];
-                    const pow13: Integer = PowerNum[IND13];
-                    if (pow07 > 0 && pow13 > 0) {
-                        if (pow07 <= pow13) {
-                            // this counts the steps for the repeated 0-1-0-1 cycles
+                    const pow05: Integer = PowerNum[IND05];
+                    if (pow05 > 0) {
+                        const pow07: Integer = PowerNum[IND07];
+                        if (pow05 >= pow07) {
                             const steps: Integer = pow07;
                             PowerNum[IND02] += steps;
                             PowerNum[IND03] += steps;
@@ -46,36 +121,45 @@ namespace E308 {
                             PowerNum[IND11] += 1;
                             PowerNum[IND13] -= 1;
                             fracIndex = 4;
-                            cnt += 2 * steps + 1;
+                            cnt += BigInt(2 * steps + 1);
                         } else {
                             // this counts the steps for the repeated 0-1-0-1 cycles (plus on 0 execution)
-                            const steps: Integer = pow13;
+                            const steps: Integer = pow05;
                             PowerNum[IND02] += steps;
                             PowerNum[IND03] += steps;
                             PowerNum[IND05] -= steps;
                             PowerNum[IND07] -= steps;
-                            fracIndex = 0;
-                            cnt += steps;
+                            // one more exec 0
+                            PowerNum[IND07] -= 1;
+                            PowerNum[IND13] -= 1;
+                            PowerNum[IND17] += 1;
+                            const pow03: Integer = PowerNum[IND03];
+                            if (pow03 > 0) {
+                                fracIndex = 2;
+                            } else {
+                                fracIndex = 8;
+                            }
+                            cnt += BigInt(2 * steps + 1);
                         }
                     } else {
+                        // one more exec 0
                         PowerNum[IND07] -= 1;
                         PowerNum[IND13] -= 1;
                         PowerNum[IND17] += 1;
-                        if (PowerNum[IND03] > 0 && PowerNum[IND17] > 0) {
+                        const pow03: Integer = PowerNum[IND03];
+                        if (pow03 > 0) {
                             fracIndex = 2;
-                        } else if (PowerNum[IND17] > 0) {
-                            fracIndex = 8;
                         } else {
-                            throw `case 0 :: ${PowerNum}`;
+                            fracIndex = 8;
                         }
-                        cnt += 1;
+                        cnt += 1n;
                     }
                     break;
                 case 2: 
                     {
                         // frac 2
                         PowerNum[IND19] += 1;
-                        PowerNum[IND13] -= 1;
+                        PowerNum[IND03] -= 1;
                         PowerNum[IND17] -= 1;
                         // cycle of frac 3-6-3-6
                         const steps: Integer = PowerNum[IND02];
@@ -91,9 +175,9 @@ namespace E308 {
                             PowerNum[IND11] -= 1;
                             PowerNum[IND13] += 1;
                             fracIndex = 0;
-                            cnt += 1;
+                            cnt += 1n;
                         }
-                        cnt += steps + 1;
+                        cnt += BigInt(2 * steps + 2);
                     }
                     break;
                 case 4:
@@ -106,7 +190,7 @@ namespace E308 {
                         PowerNum[IND11] -= 1;
                         PowerNum[IND13] += 1;
                         fracIndex = 0;
-                        cnt += 2 * steps + 1;
+                        cnt += BigInt(2 * steps + 1);
                     }
                     break;
                 case 8:
@@ -115,6 +199,7 @@ namespace E308 {
                         fracIndex = 11;
                         cnt++;
                         if (PowerNum.slice(1).every(v => v === 0)) {
+                            power2 = PowerNum[IND02];
                             console.log(`cnt=${cnt} power2=${PowerNum[IND02]}`);
                         }
                     }
@@ -130,13 +215,13 @@ namespace E308 {
                         const steps12: Integer = PowerNum[IND07];
                         if (steps12 > 0) {
                             PowerNum[IND07] -= steps12;
-                            cnt += steps12;
+                            cnt += BigInt(steps12);
                         }
                         // frac 13
                         PowerNum[IND05] += 1;
                         PowerNum[IND11] += 1;
                         fracIndex = 4;
-                        cnt += steps11 + 1;
+                        cnt += BigInt(steps11 + 1);
                     }
                     break;
                 default:
@@ -147,9 +232,10 @@ namespace E308 {
 
     export function run(): void {
         PowerNum[IND02] = 1;
+        // bruteCount();
         stepCount(11);
     }
-
+/*
     const primes: PrimeNumbers = new PrimeNumbers(1000);
 
     const numers: Integer[] = [17, 78, 19, 23, 29, 77, 95, 77, 1, 11, 13, 15, 1, 55];
@@ -276,7 +362,7 @@ namespace E308 {
         }
     }
 
-
+*/
 }
 
 E308.run();

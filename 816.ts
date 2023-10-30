@@ -44,7 +44,7 @@ namespace E816 {
         return points;
     }
 
-    function find(lo: Integer, hi: Integer): number {
+    function find(lo: Integer, hi: Integer): void {
         
     }
 

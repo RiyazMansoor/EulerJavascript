@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "type": "module",
     "@types/node": "^20.8.6",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0"
