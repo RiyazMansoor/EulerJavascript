@@ -1,3 +1,2 @@
 *.txt
-node_modules/@types/node/*
-node_modules/undici-types/*
+node_modules/*
