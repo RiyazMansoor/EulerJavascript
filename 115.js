@@ -27,9 +27,9 @@ var E115;
             if (sum + blksize > BLOCKLENGTH)
                 break;
             cnt += find(sum + blksize, path.concat([blksize]));
-            if (path.length == 0) {
-                console.log(`progress level 0 value=${blksize}`);
-            }
+            // if (path.length == 0) {
+            //     console.log(`progress level 0 value=${blksize}`);
+            // }
         }
         if (tocache)
             CACHE.set(sum, cnt);
