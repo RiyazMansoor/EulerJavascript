@@ -232,8 +232,8 @@ export namespace Pythagorean {
         const { a, b, c } = triple;
         const a2 = 2 * a, b2 = 2 * b, c2 = 2 * c, c3 = 3 * c;
         return [
-            { a: ( a - b2 + c2), b: ( a2 - b + c2), c: ( a2 - b2 + c3) },
-            { a: ( a + b2 + c2), b: ( a2 + b + c2), c: ( a2 + b2 + c3) },
+            { a: (a - b2 + c2), b: (a2 - b + c2), c: (a2 - b2 + c3) },
+            { a: (a + b2 + c2), b: (a2 + b + c2), c: (a2 + b2 + c3) },
             { a: (-a + b2 + c2), b: (-a2 + b + c2), c: (-a2 + b2 + c3) },
         ];
     }
