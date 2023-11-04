@@ -158,9 +158,9 @@ export namespace Numbers {
      * @param num number to calculate factorial
      * @returns factorial of <b>num</b>
      */
-    export function Factorial(num: Integer): bigint {
+    export function Factorial(num: Integer, cutoff: Integer = 2): bigint {
         let result: bigint = 1n;
-        for (let i = 2; i <= num; i++) {
+        for (let i = cutoff; i <= num; i++) {
             result *= BigInt(i);
         }
         return result;
@@ -191,8 +191,9 @@ export namespace Numbers {
     export function Permutations(nums: Integer[]): bigint {
         // count repetitions
         const freq: FrequencyMap = Frequency(nums);
-        const repeats: Integer[] = Array.from(freq.values()).filter(val => val > 1);
-        let result: bigint = Factorial(nums.length);
+        const repeats: Integer[] = Numbers.SortAsc(Array.from(freq.values()).filter(val => val > 1));
+        const max: Integer = repeats.pop() ?? 1;
+        let result: bigint = Factorial(nums.length, max + 1);
         repeats.forEach(val => result /= Factorial(val));
         return result;
     }

@@ -1,5 +1,5 @@
 
-import { Integer, Numbers, Util } from "./common";
+import { Integer, Numbers, Util } from "./../common";
 
 namespace E83 {
 

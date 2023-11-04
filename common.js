@@ -139,9 +139,9 @@ var Numbers;
      * @param num number to calculate factorial
      * @returns factorial of <b>num</b>
      */
-    function Factorial(num) {
+    function Factorial(num, cutoff = 2) {
         let result = 1n;
-        for (let i = 2; i <= num; i++) {
+        for (let i = cutoff; i <= num; i++) {
             result *= BigInt(i);
         }
         return result;
@@ -167,8 +167,9 @@ var Numbers;
     function Permutations(nums) {
         // count repetitions
         const freq = Frequency(nums);
-        const repeats = Array.from(freq.values()).filter(val => val > 1);
-        let result = Factorial(nums.length);
+        const repeats = Numbers.SortAsc(Array.from(freq.values()).filter(val => val > 1));
+        const max = repeats.pop() ?? 1;
+        let result = Factorial(nums.length, max + 1);
         repeats.forEach(val => result /= Factorial(val));
         return result;
     }
