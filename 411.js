@@ -70,7 +70,8 @@ var E411;
         const ypoints = points.concat([]).sort((a, b) => a.y - b.y);
         const xcoords = xpoints.map(p => p.x);
         const ycoords = ypoints.map(p => p.y);
-        function findPath(p, stationCount) {
+        function findPath(p, stationCount, path) {
+            console.log(`path:: stationCount=${stationCount}`, path);
             let maxStationCount = stationCount;
             const xindex = nextXPointIndex(p, xcoords, xpoints);
             if (xindex < xcoords.length) {
@@ -80,18 +81,17 @@ var E411;
                     if (!reachableValid(p, tp))
                         break;
                     const cacheVal = pcache.get(pointStr(tp));
-                    if (cacheVal > 0 && cacheVal <= stationCount + 1)
-                        continue;
+                    // if (cacheVal > 0 && cacheVal <= stationCount + 1) continue;
                     const reachable = nextXPoints.some(np => reachableValid(np, tp));
                     if (reachable)
                         break;
-                    pcache.set(pointStr(tp), stationCount + 1);
+                    // pcache.set(pointStr(tp), stationCount + 1);
                     nextXPoints.push(tp);
                     console.log(`added from=${pointStr(p)} xtp=${pointStr(tp)} stationCount=${stationCount}`);
                 }
                 for (const np of nextXPoints) {
                     console.log(`nextXPoint from=${pointStr(p)} to=${pointStr(np)}`);
-                    const newStationCount = findPath(np, stationCount + 1);
+                    const newStationCount = findPath(np, stationCount + 1, path.concat([pointStr(np)]));
                     maxStationCount = Math.max(maxStationCount, newStationCount);
                 }
             }
@@ -103,28 +103,28 @@ var E411;
                     if (!reachableValid(p, tp))
                         break;
                     const cacheVal = pcache.get(pointStr(tp));
-                    if (cacheVal > 0 && cacheVal <= stationCount + 1)
-                        continue;
+                    // if (cacheVal > 0 && cacheVal <= stationCount + 1) continue;
                     const reachable = nextYPoints.some(np => reachableValid(np, tp));
                     if (reachable)
                         break;
-                    pcache.set(pointStr(tp), stationCount + 1);
+                    // pcache.set(pointStr(tp), stationCount + 1);
                     nextYPoints.push(tp);
                     // console.log(`added ytp = ${pointStr(tp)} stationCount=${stationCount}`);
                 }
                 for (const np of nextYPoints) {
                     console.log(`nextYPoint from=${pointStr(p)} to=${pointStr(np)}`);
-                    const newStationCount = findPath(np, stationCount + 1);
+                    const newStationCount = findPath(np, stationCount + 1, path.concat([pointStr(np)]));
                     maxStationCount = Math.max(maxStationCount, newStationCount);
                 }
             }
             return maxStationCount;
         }
-        return findPath(ORIGIN, 0);
+        return findPath(ORIGIN, 0, []);
     }
+    const ARG2 = parseInt(process.argv[2] ?? "22");
     function run() {
         const startTime = new Date().getMilliseconds();
-        let cnt = stationPathMax(22);
+        let cnt = stationPathMax(ARG2);
         // const points: Point[] = stationPoints(22);
         // console.log(points.sort( (a,b) => a.x - b.x ));
         // console.log(uniquePoints(points));
