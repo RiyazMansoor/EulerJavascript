@@ -1,12 +1,13 @@
 
 // answer 16475640049n
 
-import { Integer, Numbers } from "./common";
+import { Integer, Numbers } from "../common";
 
-namespace E114 {
+namespace E115 {
 
-    const BLOCKLENGTH: Integer = parseInt(process.argv[2] ?? "7");
-    const BLOCKSIZES: Integer[] = [1].concat(new Array(BLOCKLENGTH - 3 + 1).fill(3).map((n, i) => n + i));
+    const BLOCKLENGTH: Integer = parseInt(process.argv[3] ?? "29");
+    const BLOCKMIN: Integer = parseInt(process.argv[2] ?? "3");
+    const BLOCKSIZES: Integer[] = [1].concat(new Array(BLOCKLENGTH - BLOCKMIN + 1).fill(BLOCKMIN).map((n, i) => n + i));
     // console.log(BLOCKSIZES);
 
     const CACHE: Map<Integer, bigint> = new Map();
@@ -28,9 +29,9 @@ namespace E114 {
         for (const blksize of BLOCKSIZES) {
             if (sum + blksize > BLOCKLENGTH) break;
             cnt += find(sum + blksize, path.concat([blksize]));
-            if (path.length == 0) {
-                console.log(`progress level 0 value=${blksize}`);
-            }
+            // if (path.length == 0) {
+            //     console.log(`progress level 0 value=${blksize}`);
+            // }
         }
         if (tocache) CACHE.set(sum, cnt);
         return cnt;
@@ -38,6 +39,7 @@ namespace E114 {
 
     export function run(): bigint {
         const startTime = new Date().getMilliseconds();
+        // for (let len =)
         const result = find(0, []);
         const endTime = new Date().getMilliseconds();
         console.log(`time elapsed ${(endTime - startTime) / 1000} seconds.`);
@@ -46,4 +48,4 @@ namespace E114 {
 
 }
 
-console.log(E114.run());
+console.log(E115.run());

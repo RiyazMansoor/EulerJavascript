@@ -1,7 +1,7 @@
 
 // answer 100808458960497n
 
-import { Integer, Numbers } from "./common";
+import { Integer, Numbers } from "../common";
 
 namespace E117 {
 

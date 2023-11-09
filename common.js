@@ -120,6 +120,42 @@ var Numbers;
     }
     Numbers.binarySearch = binarySearch;
     /**
+     * https://codybonney.com/leetcode-search-insert-position-solution-using-typescript/
+     * Search Insert Position
+     * Given a sorted array and a target value, return
+     * the index if the target is found. If not, return
+     * the index where it would be if it were inserted in order.
+     *
+     * Time Complexity: O(log(n))
+     * Space Complexity: O(1)
+     *
+     * searchInsert([1,3,5,6], 5) // 2
+     * searchInsert([1,3,5,6], 0) // 0
+     */
+    function indexOfSorted(target, nums) {
+        let l_index = 0;
+        let r_index = nums.length - 1;
+        // complete a binary search
+        while (l_index <= r_index) {
+            // set pivot point half way between left and right
+            const m_index = Math.floor((l_index + r_index) / 2);
+            // found target
+            if (nums[m_index] === target) {
+                return m_index;
+            }
+            // eliminate search space on the right
+            else if (nums[m_index] > target) {
+                r_index = m_index - 1;
+            }
+            // eliminate search space on the left
+            else {
+                l_index = m_index + 1;
+            }
+        }
+        return l_index;
+    }
+    Numbers.indexOfSorted = indexOfSorted;
+    /**
      * Returns the transposed double array.
      * @param matrix double array to transpose
      * @returns transposed double array
@@ -219,6 +255,17 @@ var Set;
         return nums.reduce((a, v) => a.concat(a.map((r) => [v].concat(r))), [[]]);
     }
     Set.Powerset = Powerset;
+    function SetsOfSize(nums, size) {
+        const results = [];
+        function find(pos, path) {
+            if (pos == size) {
+                results.push(path);
+                return;
+            }
+        }
+        return results;
+    }
+    Set.SetsOfSize = SetsOfSize;
 })(Set || (exports.Set = Set = {}));
 var Util;
 (function (Util) {

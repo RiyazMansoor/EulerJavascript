@@ -1,7 +1,7 @@
 "use strict";
 // answer 100808458960497n
 Object.defineProperty(exports, "__esModule", { value: true });
-const common_1 = require("./common");
+const common_1 = require("../common");
 var E117;
 (function (E117) {
     const BLOCKLENGTH = parseInt(process.argv[2] ?? "5");

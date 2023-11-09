@@ -51,16 +51,17 @@ var E158;
         const lastVal = trekked[trekked.length - 1] ?? -1;
         let cnt = 0;
         for (const num of trekOptions) {
+            let newDipped = dipped;
             let newOptions = trekOptions.filter(v => v != num);
-            if (num < lastVal) { // || dipped) {
-                if (dipped)
-                    continue;
-                dipped = true;
+            if (num < lastVal || dipped) {
+                // if (newDipped) console.log(trekked, num, newOptions);
+                newDipped = true;
                 newOptions = newOptions.filter(v => v > num);
+                // if (newDipped) console.log(trekked, num, newOptions);
                 if (newOptions.length + 1 < length - pos)
                     break;
             }
-            cnt += trek(pos + 1, trekked.concat([num]), length, newOptions, dipped);
+            cnt += trek(pos + 1, trekked.concat([num]), length, newOptions, newDipped);
         }
         return cnt;
     }

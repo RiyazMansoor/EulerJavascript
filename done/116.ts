@@ -1,6 +1,6 @@
 // answer 20492570929
 
-import { Integer, Numbers } from "./common";
+import { Integer, Numbers } from "../common";
 
 namespace E116 {
 
