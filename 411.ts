@@ -4,21 +4,20 @@ import { Integer, Numbers } from "./common";
 
 namespace E411 {
 
-    type Point = { x: Integer, y: Integer, index: Integer }
-    const ORIGIN: Point = { x: 0, y: 0, index: 0 }
+    type Point = { x: Integer, y: Integer }
+    const ORIGIN: Point = { x: 0, y: 0 }
 
     function pointStr(p: Point): string {
         return `(${p.x},${p.y})`;
     }
 
     function stationPoints(N: Integer): Point[] {
-        const points: Point[] = [ORIGIN, { x: 1, y: 1, index: 1 }];
+        const points: Point[] = [ORIGIN, { x: 1, y: 1 }];
         let lastPoint: Point = points[1];
         for (let i = 1; i <= 2 * N; i++) {
             const point: Point = {
                 x: (2 * lastPoint.x) % N,
-                y: (3 * lastPoint.y) % N,
-                index: i+1
+                y: (3 * lastPoint.y) % N
             }
             points.push(point);
             lastPoint = point;
@@ -27,14 +26,37 @@ namespace E411 {
         return uniquePoints(points);
     }
 
+    function equalPoints(p1: Point, p2: Point): boolean {
+        return p1.x == p2.x && p1.y == p2.y;
+    }
+
+    function forwardPoints(p1: Point, p2: Point): boolean {
+        return p2.x >= p1.x && p2.y >= p1.y;
+    }
+
+    function forwardMap(N: Integer): Map<string, Point[]> {
+        const fMap: Map<string, Point[]> = new Map();
+        const points: Point[] = stationPoints(N);
+        for (const point of points) {
+            
+        }
+        return fMap;
+    }
+
     function uniquePoints(points: Point[]): Point[] {
-        points.sort((p1, p2) => p1.x - p2.x);
-        return points.filter((p, i) => {
-            for (let subi = i + 1; subi < points.length && p.x == points[subi].x; subi++) {
-                if (points[subi].y == p.y) return false;
-            }
-            return true;
-        });
+        points.sort( (p1, p2) => p1.x - p2.x || p1.y - p2.y );
+        return points.filter((p, i) => i + 1 == points.length || !equalPoints(p, points[i + 1]) );
+    }
+
+    function nextXIndex(p: Point, xcoords: Integer[], xpoints: Point[]): Integer {
+        let index: Integer = Numbers.indexOfSorted(p.x, xcoords);
+        while (p.y < xpoints[index].y) {
+            index--;
+        }
+        while (p.y > xpoints[index].y) {
+            index++;
+        }
+        return index;
     }
 
     function nextXPointIndex(p: Point, xcoords: Integer[], xpoints: Point[]): Integer {
