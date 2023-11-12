@@ -6,3 +6,4 @@ var E64;
         return Math.floor(Math.sqrt(rootN));
     }
 })(E64 || (E64 = {}));
+//# sourceMappingURL=64.js.map

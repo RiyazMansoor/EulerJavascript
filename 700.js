@@ -68,3 +68,4 @@ var E700;
     E700.brute = brute;
 })(E700 || (E700 = {}));
 console.log(E700.run());
+//# sourceMappingURL=700.js.map

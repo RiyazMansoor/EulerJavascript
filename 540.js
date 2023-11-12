@@ -19,3 +19,4 @@ function count_triples(triple, depth = 1) {
 }
 console.log(count_triples(common_1.Pythagorean.RootTriple));
 console.log(CONTAINER.length);
+//# sourceMappingURL=540.js.map

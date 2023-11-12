@@ -13,3 +13,4 @@ function scanner() {
     return cnt;
 }
 console.log(new common_1.PrimeNumbers(1e6).toArray().length);
+//# sourceMappingURL=276.js.map

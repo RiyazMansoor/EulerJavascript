@@ -228,3 +228,4 @@ function find(pos, solpath, fmap) {
 // console.log(find(0, [], new Map()));
 // console.log(Array.from(solutionSet).sort((a,b)=>b.localeCompare(a)).forEach(s=>console.log(s)));
 // console.log(Array.from(solutionSet).sort((a,b)=>b.localeCompare(a)));
+//# sourceMappingURL=169.js.map

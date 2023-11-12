@@ -36,3 +36,4 @@ function e168() {
     console.log(`final sum=${sum.toString().slice(-5)}`);
 }
 e168();
+//# sourceMappingURL=168.js.map

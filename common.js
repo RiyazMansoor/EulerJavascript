@@ -210,7 +210,7 @@ var Numbers;
         return result;
     }
     Numbers.Permutations = Permutations;
-})(Numbers = exports.Numbers || (exports.Numbers = {}));
+})(Numbers || (exports.Numbers = Numbers = {}));
 /**
  * This namespace provides types, constants and functions relating to the Pythagorean Theorem.
  */
@@ -239,7 +239,7 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
+})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
 /**
  * This namespace provides types, constants and functions relating to <b>Set</b> operations.
  */
@@ -266,7 +266,7 @@ var Set;
         return results;
     }
     Set.SetsOfSize = SetsOfSize;
-})(Set = exports.Set || (exports.Set = {}));
+})(Set || (exports.Set = Set = {}));
 var Util;
 (function (Util) {
     const fs = require('fs');
@@ -282,8 +282,9 @@ var Util;
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
     Util.csvToIntMatrix = csvToIntMatrix;
-})(Util = exports.Util || (exports.Util = {}));
+})(Util || (exports.Util = Util = {}));
 class PrimeNumbers {
+    primes;
     constructor(uptoN) {
         // const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
@@ -355,9 +356,9 @@ class PrimeNumbers {
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
+    num = 1;
+    den = 1;
     constructor(numerator, denominator) {
-        this.num = 1;
-        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }
@@ -401,9 +402,9 @@ class Fraction {
 }
 exports.Fraction = Fraction;
 class ComplexNumber {
+    real = 0n;
+    imaginary = 0n;
     constructor(real, imaginary) {
-        this.real = 0n;
-        this.imaginary = 0n;
         this.real = real;
         this.imaginary = imaginary;
     }
@@ -432,9 +433,9 @@ class ComplexNumber {
 }
 exports.ComplexNumber = ComplexNumber;
 class PowerNumber {
+    val = 1;
+    num = new Map();
     constructor(base = 1, power = 1) {
-        this.val = 1;
-        this.num = new Map();
         this.num.set(base, power);
         this.val = Math.pow(base, power);
     }
@@ -513,3 +514,4 @@ class PowerNumber {
     }
 }
 exports.PowerNumber = PowerNumber;
+//# sourceMappingURL=common.js.map

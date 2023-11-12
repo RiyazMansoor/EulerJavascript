@@ -1,2 +1,6 @@
 *.txt
 node_modules/*
+*.map
+*.js
+!TODO.txt
+

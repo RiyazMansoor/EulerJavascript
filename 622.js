@@ -40,3 +40,4 @@ var E622;
     E622.run = run;
 })(E622 || (E622 = {}));
 console.log(E622.run());
+//# sourceMappingURL=622.js.map
