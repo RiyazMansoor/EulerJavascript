@@ -1,7 +1,7 @@
 
 // answer 1918080160
 
-import { Integer } from "./common";
+import { Integer } from "../common";
 
 namespace E191 {
 

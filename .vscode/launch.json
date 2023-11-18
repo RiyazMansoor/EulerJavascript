@@ -16,11 +16,25 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Debug",
+            "name": "Debug411",
+            "sourceMaps": true,
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\411.ts",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug158",
+            "sourceMaps": true,
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\158.ts",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

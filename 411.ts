@@ -3,101 +3,221 @@
 import { Integer } from "./common";
 
 
-type Point = { x: Integer, y: Integer, next: Point[], value: Integer }
+type Point = { x: Integer, y: Integer, next: Point[], value: Integer, visited: string }
 
-const ORIGIN: Point = { x: 0, y: 0, next: [], value: 1 }
+const ORIGIN: Point = { x: 0, y: 0, next: [], value: 0, visited: "" }
 
-function coordToStr(p: Point): string {
+function unvisitPoints(points: Point[]): void {
+    points.forEach( p => p.visited = "" );
+}
+
+function toStr(p: Point): string {
     return `(${p.x},${p.y})[${p.value}]`;
 }
 
-function pointToStr(p: Point): string {
-    const nextPoints: string = p.next.reduce( (pv, cv) => `${pv}${coordToStr(cv)}|`, "" )
-    return `${coordToStr(p)} ==> { |${nextPoints} }`;
+function toStrWithNext(p: Point): string {
+    const nextPoints: string = p.next.reduce( (pv, cv) => `${pv}${toStr(cv)}|`, "" );
+    return `${toStr(p)}==>|${nextPoints}`;
 }
 
 function equalPoints(p1: Point, p2: Point): boolean {
     return p1.x == p2.x && p1.y == p2.y;
 }
 
-function uniquePoints(points: Point[]): Point[] {
+function removeDuplicates(points: Point[]): Point[] {
     points.sort( (p1, p2) => p1.x - p2.x || p1.y - p2.y );
-    return points.filter((p, i) => i + 1 == points.length || !equalPoints(p, points[i + 1]) );
+    return points.filter( (p, i) => i + 1 == points.length || !equalPoints(p, points[i + 1]) );
 }
 
-function stationPoints(N: Integer): Point[] {
-    const points: Point[] = [{ x: 1, y: 1, next: [], value: 1 }];
-    let prevPoint: Point = points[0];
+function generatePoints(N: Integer): Point[] {
+    const points: Point[] = [ ORIGIN, { x: 1, y: 1, next: [], value: 1, visited: "" } ];
+    let prevPoint: Point = points[1];
     for (let i = 1; i <= 2 * N; i++) {
         const point: Point = {
             x: (2 * prevPoint.x) % N,
             y: (3 * prevPoint.y) % N,
             next: [],
-            value: 1
+            value: 1,
+            visited: ""
         }
         points.push(point);
         prevPoint = point;
     }
-    return uniquePoints(points);
+    return removeDuplicates(points);
 }
 
-function reachable(p1: Point, p2: Point): boolean {
-    return p2.x >= p1.x && p2.y >= p1.y;
+function reachable(from: Point, to: Point): boolean {
+    return to.x >= from.x && to.y >= from.y;
 }
 
-function addPoint(searchPoint: Point, newPoint: Point): void {
-    // console.log(pointToStr(searchPoint), pointToStr(newPoint));
-    // if (searchPoint.next.length === 0) {
-    //     searchPoint.next.push(newPoint);
-    //     return;
-    // }
-    let HasPath: boolean = false;
-    for (const nextPoint of searchPoint.next) {
-        if (equalPoints(newPoint, nextPoint)) {
-            continue;
-        } else if (reachable(nextPoint, newPoint)) {
+function hasDuplicate(point: Point, points: Point[]): boolean {
+    const len: Integer = points.length;
+    const duplicated: boolean = (len > 0) && (points[len-1] == point);
+    return duplicated;
+}
+
+function insert(from: Point, to: Point, newPoint: Point): boolean {
+    if (equalPoints(newPoint, to)) return false;
+    const visitedTag: string = toStr(newPoint);
+    if (reachable(to, newPoint)) {
+        if (to.visited != visitedTag) {
             // recurse further into path
+            to.visited = visitedTag;
+            insertAt(to, newPoint);
+        }
+        return true;
+    } 
+    if (reachable(newPoint, to)) {
+        // insert point here;
+        newPoint.next.push(to);
+        from.next[from.next.indexOf(to)] = newPoint;
+        return true;
+    }
+    return false;
+}
+
+function insertAt(from: Point, newPoint: Point): void {
+    const visitedTag: string = toStr(newPoint);
+    // single branch will stack (avoid recursion limit)
+    while (from.next.length === 1) {
+        
+    }
+    // multi branch must recurse
+    let HasPath: boolean = false;
+    for (const to of from.next) {
+        HasPath = insert(from, to, newPoint) || HasPath;
+    }
+    // here we add as a sibling to .next (can be empty)
+    if (!HasPath && !hasDuplicate(newPoint, from.next)) { 
+        from.next.push(newPoint);
+    }
+}
+
+function insertPoint(from: Point, newPoint: Point): void {
+    const visitedTag: string = toStr(newPoint);
+    // single branch will stack (avoid recursion limit)
+    
+    // multi branch must recurse
+    let HasPath: boolean = false;
+    for (const to of from.next) {
+        if (equalPoints(newPoint, to)) {
+            continue;
+        } 
+        if (reachable(to, newPoint)) {
             HasPath = true;
-            addPoint(nextPoint, newPoint);
-        } else if (reachable(newPoint, nextPoint)) {
+            if (to.visited == visitedTag) continue;
+            // recurse further into path
+            to.visited = visitedTag;
+            insertPoint(to, newPoint);
+            continue;
+        } 
+        if (reachable(newPoint, to)) {
             // insert point here;
             HasPath = true;
-            newPoint.next.push(nextPoint);
-            searchPoint.next[searchPoint.next.indexOf(nextPoint)] = newPoint;
+            newPoint.next.push(to);
+            from.next[from.next.indexOf(to)] = newPoint;
+            continue;
         }
     }
-    if (!HasPath) {
-        searchPoint.next.push(newPoint);
-        console.log("fallback",pointToStr(searchPoint), pointToStr(newPoint))
+    // here we add as a sibling to .next (can be empty)
+    if (!HasPath && !hasDuplicate(newPoint, from.next)) { 
+        from.next.push(newPoint);
     }
+}
+
+function telescopePoints(start: Point): void {
+    // console.log(`start=${toStrWithNext(start)}`)
+    if (start.next.length === 0) return;
+    if (start.next.length === 1) {
+        let cnt: Integer = 0;
+        let nextArray: Point[] = start.next;
+        while (nextArray.length === 1) {
+            cnt++;
+            nextArray = nextArray[0].next;
+        }
+        start.value += cnt;
+        start.next = nextArray;
+        if (start.next.length === 0) return;
+    }
+
+    for (const point of start.next) {
+        if (point.visited == "yes") continue;
+        point.visited = "yes";
+        // console.log(`point=${toStrWithNext(point)}`)
+        telescopePoints(point);
+    }
+}
+
+const CountVisited: string = "PCV";
+function count(start: Point): Integer {
+    // console.log(`start=${toStrWithNext(start)}`);
+    if (start.visited == CountVisited) return 0;
+    start.visited = CountVisited;
+    if (start.next.length == 0) return 1;
+    // counter
+    let cnt: Integer = 0;
+    // single chains - avoid recursion limit
+    while (start.next.length === 1 && start.next[0].visited != CountVisited) {
+        start = start.next[0];
+        start.visited = CountVisited;
+        cnt++;
+    }
+    if (start.next.length === 0 || start.next[0].visited == CountVisited) return cnt;
+    cnt++; // current start point
+    // multi branch trees
+    for (const point of start.next) {
+        if (point.visited == CountVisited) continue;
+        cnt += count(point);
+        point.visited = CountVisited;
+    }
+    return cnt;
+}
+
+const CACHE: Map<string, Integer> = new Map();
+function getCache(p: Point): Integer {
+    const key: string = toStr(p);
+    let cacheVal: Integer = (CACHE.get(key) ?? 0);
+    if (!cacheVal) {
+        cacheVal = maxPoints(p);
+        CACHE.set(key, cacheVal);
+    }
+    return cacheVal;
 }
 
 function maxPoints(start: Point): Integer {
-    if (start.next.length === 0) return 1;
+    if (start.next.length === 0) return start.value;
     let max: Integer = 0;
     for (const point of start.next) {
-        const pmax: Integer = maxPoints(point) + 1;
+        const pmax: Integer = getCache(point);
+        // console.log(`point=${toStrWithNext(point)} stations=${pmax}`);
         max = Math.max(max, pmax);
     }
-    return max;
+    return max + start.value;
 }
 
 const ARG2: Integer = parseInt(process.argv[2] ?? "22");
 
 export function run(): Integer {
     const startTime = new Date().getMilliseconds();
-    const points: Point[] = stationPoints(ARG2);
-    // points.forEach(p => console.log(pointToStr(p)))
-    points.forEach(p => {
-        addPoint(ORIGIN, p);
-        console.log(pointToStr(p));
+    const points: Point[] = generatePoints(ARG2);
+    console.log(`point count = ${points.length}`);
+    points.slice(1).forEach((p, i) => {
+        insertPoint(ORIGIN, p);
+        if (i % 500 == 0) console.log(`index=${i} point :: ${toStrWithNext(p)}`);
+        // console.log(pointToStr(p));
         // points.forEach(p => console.log(pointToStr(p)));    
     });
-    points.forEach(p => console.log(pointToStr(p)));
-    // let cnt: Integer = maxPoints(ORIGIN) - 1;
+    unvisitPoints(points);
+    console.log("inserted");
+    // points.forEach(p => console.log(toStrWithNext(p)));
+    telescopePoints(ORIGIN);
+    // points.forEach(p => console.log(toStrWithNext(p)));
+    console.log(`telescoped origin=${count(ORIGIN)}`);
+    unvisitPoints(points);
+    let cnt: Integer = maxPoints(ORIGIN);
     const endTime = new Date().getMilliseconds();
     console.log(`time elapsed ${(endTime - startTime) / 1000} seconds.`);
-    return 0;
+    return cnt;
 }
 
 /*

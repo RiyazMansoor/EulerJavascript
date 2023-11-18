@@ -266,6 +266,28 @@ var Set;
         return results;
     }
     Set.SetsOfSize = SetsOfSize;
+    function Combinations(supersetSize, subsetSize) {
+        const combinations = [];
+        const stack = [];
+        let index = 0;
+        while (true) {
+            if (stack.length === subsetSize) {
+                combinations.push([...stack]);
+                index = stack.pop() + 1;
+            }
+            if (index >= supersetSize) {
+                if (stack.length === 0)
+                    break;
+                index = stack.pop() + 1;
+            }
+            else {
+                stack.push(index);
+                index++;
+            }
+        }
+        return combinations;
+    }
+    Set.Combinations = Combinations;
 })(Set || (exports.Set = Set = {}));
 var Util;
 (function (Util) {

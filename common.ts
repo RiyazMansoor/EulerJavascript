@@ -305,6 +305,26 @@ export namespace Set {
         return results;
     }
 
+    export function Combinations(supersetSize: Integer, subsetSize: Integer): Integer[][] {
+        const combinations: Integer[][] = [];
+        const stack: Integer[] = [];
+        let index = 0;
+        while (true) {
+            if (stack.length === subsetSize) {
+                combinations.push([...stack]);
+                index = stack.pop()! + 1;
+            }
+            if (index >= supersetSize) {
+                if (stack.length === 0) break;
+                index = stack.pop()! + 1;
+            } else {
+                stack.push(index);
+                index++;
+            }
+        }
+        return combinations;
+    }
+
 }
 
 export namespace Util {
