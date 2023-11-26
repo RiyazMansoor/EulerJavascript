@@ -1,7 +1,7 @@
 
 // answer 694687
 
-import { Integer, Numbers } from "./common";
+import { Integer, Numbers } from "../common";
 
 namespace E504 {
 

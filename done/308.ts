@@ -1,7 +1,7 @@
 
 // answer cnt=1539669807660924 power2=104743
 
-import { Integer, Numbers, PRIMES1000, PowerNumber, Prime, PrimeNumbers } from "./common";
+import { Integer, Numbers, PRIMES1000, PowerNumber, Prime, PrimeNumbers } from "../common";
 
 namespace E308 {
 
