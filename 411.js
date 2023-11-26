@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const common_1 = require("./common");
 const ORIGIN = { x: 0, y: 0, next: [], value: 0 };
+function newCoord(p) {
+    return { x: p.x, y: p.y };
+}
 function resetValue(points) {
     points.forEach(p => p.value = -1);
 }
@@ -15,7 +19,7 @@ function isEqual(p1, p2) {
     return p1.x == p2.x && p1.y == p2.y;
 }
 function removeDuplicates(points) {
-    points.sort((p1, p2) => p2.x - p1.x || p2.y - p1.y);
+    points.sort((p1, p2) => p1.x - p2.x || p1.y - p2.y);
     return points.filter((p, i) => i + 1 == points.length || !isEqual(p, points[i + 1]));
 }
 function generatePoints(N) {
@@ -182,9 +186,58 @@ function run() {
     return cnt;
 }
 function test() {
-    console.log(`N=22 Result=${path(22)}`);
-    console.log(`N=122 Result=${path(123)}`);
-    console.log(`N=10000 Result=${path(10000)}`);
+    console.log(`N=22 Result=${path2(22)}`);
+    console.log(`N=122 Result=${path2(123)}`);
+    console.log(`N=10000 Result=${path2(10000)}`);
 }
 console.log(test());
+function insertNewPoint(coordsYSorted, pointsXSorted, newPointXIndex) {
+    const newPoint = pointsXSorted[newPointXIndex];
+    // find xMinIndex using coordsYSorted
+    const yComparator = (coord) => coord.y - newPoint.y || coord.x - newPoint.x;
+    const yIndex = common_1.Numbers.indexOf(coordsYSorted, yComparator);
+    const yCoordTarget = coordsYSorted[yIndex - 1];
+    const xComparator = (point) => point.x - yCoordTarget.x || point.y - yCoordTarget.y;
+    const xMinIndex = common_1.Numbers.indexOf(pointsXSorted, xComparator);
+    // find all the valid fromPoints, insert after them.
+    for (let x = xMinIndex; x < newPointXIndex; x++) {
+        const fromPoint = pointsXSorted[x];
+        let isDirect = true;
+        for (let t = x + 1; t < newPointXIndex; t++) {
+            // check if there is an intermediate
+            if (reachable(fromPoint, pointsXSorted[t])) {
+                isDirect = false;
+                break;
+            }
+        }
+        if (isDirect) {
+            2;
+            let addCount = 0;
+            for (const nxtPoint of fromPoint.next) {
+                if (reachable(newPoint, nxtPoint)) {
+                    addCount++;
+                    fromPoint.next[fromPoint.next.indexOf(nxtPoint)] = newPoint;
+                    newPoint.next.push(nxtPoint);
+                }
+            }
+            if (addCount === 0) {
+                fromPoint.next.push(newPoint);
+            }
+        }
+        ;
+    }
+}
+function path2(N) {
+    const points = generatePoints(N);
+    const coords = points.map(p => newCoord(p));
+    coords.sort((a, b) => a.y - b.y || a.x - b.x);
+    points.slice(1).forEach((p, i) => {
+        p.value = i;
+        insertNewPoint(coords, points, i);
+        if (i % 2500 == 0)
+            console.log(`index=${i} point :: ${toStrWithNext(p)}`);
+    });
+    resetValue(points);
+    return countMax(ORIGIN);
+}
 //# sourceMappingURL=411.js.map

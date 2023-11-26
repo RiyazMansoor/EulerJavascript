@@ -1,19 +1,25 @@
 
 
-import { Integer } from "./common";
+import { Integer, Numbers } from "./common";
 
+type Coord = {
+    x: Integer,
+    y: Integer,
+}
 
-type Point = { 
-    x: Integer, 
-    y: Integer, 
-    next: Point[], 
-    value: Integer 
+type Point = Coord & {
+    next: Point[],
+    value: Integer,
 }
 
 const ORIGIN: Point = { x: 0, y: 0, next: [], value: 0 }
 
+function newCoord(p: Point): Coord {
+    return { x: p.x, y: p.y }
+}
+
 function resetValue(points: Point[]): void {
-    points.forEach( p => p.value = -1 );
+    points.forEach(p => p.value = -1);
 }
 
 function toStr(p: Point): string {
@@ -21,7 +27,7 @@ function toStr(p: Point): string {
 }
 
 function toStrWithNext(p: Point): string {
-    const nextPoints: string = p.next.reduce( (pv, cv) => `${pv}${toStr(cv)}|`, "" );
+    const nextPoints: string = p.next.reduce((pv, cv) => `${pv}${toStr(cv)}|`, "");
     return `${toStr(p)}==>|${nextPoints}`;
 }
 
@@ -30,12 +36,12 @@ function isEqual(p1: Point, p2: Point): boolean {
 }
 
 function removeDuplicates(points: Point[]): Point[] {
-    points.sort( (p1, p2) => p2.x - p1.x || p2.y - p1.y );
-    return points.filter( (p, i) => i + 1 == points.length || !isEqual(p, points[i + 1]) );
+    points.sort((p1, p2) => p1.x - p2.x || p1.y - p2.y);
+    return points.filter((p, i) => i + 1 == points.length || !isEqual(p, points[i + 1]));
 }
 
 function generatePoints(N: Integer): Point[] {
-    let points: Point[] = [ ORIGIN, { x: 1, y: 1, next: [], value: 0 } ];
+    let points: Point[] = [ORIGIN, { x: 1, y: 1, next: [], value: 0 }];
     let prevPoint: Point = points[1];
     for (let i = 1; i <= 2 * N; i++) {
         const point: Point = {
@@ -48,7 +54,7 @@ function generatePoints(N: Integer): Point[] {
         prevPoint = point;
     }
     points = removeDuplicates(points);
-    console.log(`generated 2N=${2*N} points, removed duplicates rem=${points.length}`);
+    console.log(`generated 2N=${2 * N} points, removed duplicates rem=${points.length}`);
     return points;
 }
 
@@ -58,23 +64,23 @@ function reachable(from: Point, to: Point): boolean {
 
 function insertedAlready(newPoint: Point, curPoints: Point[]): boolean {
     const len: Integer = curPoints.length;
-    const duplicated: boolean = (len > 0) && isEqual(curPoints[len-1], newPoint);
+    const duplicated: boolean = (len > 0) && isEqual(curPoints[len - 1], newPoint);
     return duplicated;
 }
 
 function nextReachablePointsTraversed(fromPoint: Point, newPoint: Point): boolean {
-    return fromPoint.next.filter( p => p.value == newPoint.value ).length > 0;
+    return fromPoint.next.filter(p => p.value == newPoint.value).length > 0;
 }
 
 function nextReachablePoints(fromPoint: Point, newPoint: Point): Point[] {
-    const points: Point[] = fromPoint.next.filter( p => p.value != newPoint.value && reachable(p, newPoint) );
-    points.forEach( p => p.value = newPoint.value );
+    const points: Point[] = fromPoint.next.filter(p => p.value != newPoint.value && reachable(p, newPoint));
+    points.forEach(p => p.value = newPoint.value);
     return points;
 }
 
 function nextUnreachablePoints(fromPoint: Point, newPoint: Point): Point[] {
-    const points: Point[] = fromPoint.next.filter( p => p.value != newPoint.value && reachable(newPoint, p) );
-    points.forEach( p => p.value = newPoint.value );
+    const points: Point[] = fromPoint.next.filter(p => p.value != newPoint.value && reachable(newPoint, p));
+    points.forEach(p => p.value = newPoint.value);
     return points;
 }
 
@@ -102,18 +108,18 @@ function insert(fromPoint: Point, newPoint: Point): void {
         }
     }
     // if (!HasPath) {
-        for (const nxtUnreachablePoint of nextUnreachablePoints(fromPoint, newPoint)) {
-            if (isEqual(nxtUnreachablePoint, newPoint)) continue;
-            if (reachable(newPoint, nxtUnreachablePoint)) {
-                HasPath = true;
-                newPoint.next.push(nxtUnreachablePoint);
-                fromPoint.next[fromPoint.next.indexOf(nxtUnreachablePoint)] = newPoint;
-                return;
-            }
+    for (const nxtUnreachablePoint of nextUnreachablePoints(fromPoint, newPoint)) {
+        if (isEqual(nxtUnreachablePoint, newPoint)) continue;
+        if (reachable(newPoint, nxtUnreachablePoint)) {
+            HasPath = true;
+            newPoint.next.push(nxtUnreachablePoint);
+            fromPoint.next[fromPoint.next.indexOf(nxtUnreachablePoint)] = newPoint;
+            return;
         }
+    }
     // }
     // here we add as a sibling to .next (can be empty)
-    if (!HasPath && !insertedAlready(newPoint, fromPoint.next)) { 
+    if (!HasPath && !insertedAlready(newPoint, fromPoint.next)) {
         fromPoint.next.push(newPoint);
     }
 }
@@ -199,7 +205,7 @@ function run(): Integer {
     const startTime = new Date().getMilliseconds();
     let cnt: Integer = 0;
     for (let k = 1; k <= 30; k++) {
-        let N: Integer = k**5;
+        let N: Integer = k ** 5;
         const result: Integer = path(N);
         cnt += result;
         console.log(`k=${k} result=${result} cnt=${cnt}`);
@@ -210,9 +216,60 @@ function run(): Integer {
 }
 
 function test(): void {
-    console.log(`N=22 Result=${path(22)}`);
-    console.log(`N=122 Result=${path(123)}`);
-    console.log(`N=10000 Result=${path(10000)}`);
+    console.log(`N=22 Result=${path2(22)}`);
+    console.log(`N=122 Result=${path2(123)}`);
+    console.log(`N=10000 Result=${path2(10000)}`);
 }
 
-console.log(test())
+console.log(test());
+
+
+function insertNewPoint(coordsYSorted: Coord[], pointsXSorted: Point[], newPointXIndex: Integer): void {
+    const newPoint: Point = pointsXSorted[newPointXIndex];
+    // find xMinIndex using coordsYSorted
+    const yComparator: Numbers.Comparator<Coord> = (coord: Coord) => coord.y - newPoint.y || coord.x - newPoint.x;
+    const yIndex: Integer = Numbers.indexOf(coordsYSorted, yComparator);
+    const yCoordTarget: Coord = coordsYSorted[yIndex - 1];
+    const xComparator: Numbers.Comparator<Point> = (point: Point) => point.x - yCoordTarget.x || point.y - yCoordTarget.y;
+    const xMinIndex: Integer = Numbers.indexOf(pointsXSorted, xComparator);
+    // find all the valid fromPoints, insert after them.
+    for (let x = xMinIndex; x < newPointXIndex; x++) {
+        const fromPoint: Point = pointsXSorted[x];
+        let isDirect: boolean = true;
+        for (let t = x + 1; t < newPointXIndex; t++) {
+            // check if there is an intermediate
+            if (reachable(fromPoint, pointsXSorted[t])) {
+                isDirect = false;
+                break;
+            }
+        }
+        if (isDirect) {
+            2
+            let addCount: Integer = 0;
+            for (const nxtPoint of fromPoint.next) {
+                if (reachable(newPoint, nxtPoint)) {
+                    addCount++;
+                    fromPoint.next[fromPoint.next.indexOf(nxtPoint)] = newPoint;
+                    newPoint.next.push(nxtPoint);
+                }
+            }
+            if (addCount === 0) {
+                fromPoint.next.push(newPoint);
+            }
+        };
+    }
+}
+
+
+function path2(N: Integer): Integer {
+    const points: Point[] = generatePoints(N);
+    const coords: Coord[] = points.map(p => newCoord(p));
+    coords.sort((a, b) => a.y - b.y || a.x - b.x);
+    points.slice(1).forEach((p, i) => {
+        p.value = i;
+        insertNewPoint(coords, points, i);
+        if (i % 2500 == 0) console.log(`index=${i} point :: ${toStrWithNext(p)}`);
+    });
+    resetValue(points);
+    return countMax(ORIGIN);
+}

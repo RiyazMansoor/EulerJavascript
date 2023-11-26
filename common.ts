@@ -175,6 +175,32 @@ export namespace Numbers {
         return l_index;
     }
 
+    export type Comparator<T> = (t: T) => Integer;
+
+    export function indexOf<T>(sortedArray: T[], comparator: Comparator<T>): Integer {
+        let l_index: Integer = 0;
+        let r_index: Integer = sortedArray.length - 1;
+        // complete a binary search
+        while (l_index <= r_index) {
+            // set pivot point half way between left and right
+            const m_index: Integer = Math.floor((l_index + r_index) / 2);
+            const compareResult: Integer = comparator(sortedArray[m_index]);
+            // found target
+            if (compareResult === 0) {
+                return m_index;
+            }
+            // eliminate search space on the right
+            else if (compareResult > 0) {
+                r_index = m_index - 1
+            }
+            // eliminate search space on the left
+            else {
+                l_index = m_index + 1;
+            }
+        }
+        return l_index;
+    }
+
     /**
      * Returns the transposed double array.
      * @param matrix double array to transpose
