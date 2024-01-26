@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const DragonLevel = parseInt(process.argv[2] ?? "10");
 const BreakCount = parseInt(process.argv[3] ?? "500");
 var StrPath;

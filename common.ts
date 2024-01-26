@@ -5,6 +5,11 @@
 export type Integer = number;
 
 /**
+ * Easier identification of floats.
+ */
+export type Float = number;
+
+/**
  * Easier identifying an array of sorted integers.
  */
 export type SortedIntegerArray = Integer[];
@@ -118,21 +123,19 @@ export namespace Numbers {
      * @param target number to find
      * @returns index of <b>target</b> or negative if not found
      */
-    export function binarySearch(nums: SortedIntegerArray, target: Integer): Integer {
-        let l_index: number = 0;
-        let r_index: number = nums.length - 1;
+    export function binarySearch(nums: SortedIntegerArray, target: Integer, lIndex: Integer = 0, rIndex: Integer = nums.length - 1): Integer {
         // if this condition failes, number not found, return -1
-        while (l_index <= r_index) {
-            const m_index: number = Math.floor((l_index + r_index) / 2);
+        while (lIndex <= rIndex) {
+            const mIndex: number = Math.floor((lIndex + rIndex) / 2);
             // return index if number found
-            if (nums[m_index] === target) {
-                return m_index;
+            if (nums[mIndex] === target) {
+                return mIndex;
             }
             // if number not found, move pointers
-            if (target < nums[m_index]) {
-                r_index = m_index - 1;
+            if (target < nums[mIndex]) {
+                rIndex = mIndex - 1;
             } else {
-                l_index = m_index + 1;
+                lIndex = mIndex + 1;
             }
         }
         return -1;
@@ -369,6 +372,10 @@ export namespace Util {
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
 
+    export function peek<T>(array: T[]): T {
+        return array[array.length - 1];
+    }
+
 }
 
 export class PrimeNumbers {
@@ -424,6 +431,8 @@ export class PrimeNumbers {
     }
 
     isPrime(candidatePrime: Integer): boolean {
+        if (candidatePrime == 2 || candidatePrime == 3) return true;
+        if (candidatePrime % 2 == 0) return false;
         return (this.indexOf(candidatePrime) >= 0);
     }
 

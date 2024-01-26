@@ -1,5 +1,6 @@
 "use strict";
 // cnt=17000000000 sum=1517926517477964
+Object.defineProperty(exports, "__esModule", { value: true });
 var E700;
 (function (E700) {
     // largest javascript  9007199254740991

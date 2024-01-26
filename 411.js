@@ -1,243 +1,151 @@
 "use strict";
+// answer = 9936352 1.5 hours computation
 Object.defineProperty(exports, "__esModule", { value: true });
-const common_1 = require("./common");
-const ORIGIN = { x: 0, y: 0, next: [], value: 0 };
-function newCoord(p) {
-    return { x: p.x, y: p.y };
-}
-function resetValue(points) {
-    points.forEach(p => p.value = -1);
-}
-function toStr(p) {
-    return `(${p.x},${p.y})`;
-}
-function toStrWithNext(p) {
-    const nextPoints = p.next.reduce((pv, cv) => `${pv}${toStr(cv)}|`, "");
-    return `${toStr(p)}==>|${nextPoints}`;
-}
-function isEqual(p1, p2) {
-    return p1.x == p2.x && p1.y == p2.y;
-}
-function removeDuplicates(points) {
-    points.sort((p1, p2) => p1.x - p2.x || p1.y - p2.y);
-    return points.filter((p, i) => i + 1 == points.length || !isEqual(p, points[i + 1]));
-}
-function generatePoints(N) {
-    let points = [ORIGIN, { x: 1, y: 1, next: [], value: 0 }];
-    let prevPoint = points[1];
-    for (let i = 1; i <= 2 * N; i++) {
+var N411;
+(function (N411) {
+    function toStr(p) {
+        return `Pos=(${p.xPos},${p.yPos}) Stops=(${p.stops}) MaxStops=(${p.maxStops}) sortIndex=(${p.sortIndex})`;
+    }
+    function debugPrint(points) {
+        console.log(`\npoints=${points.length} ::`);
+        points.forEach((p, i) => console.log(`i=${i} ${toStr(p)}`));
+    }
+    function isEqual(p1, p2) {
+        return p1.xPos == p2.xPos && p1.yPos == p2.yPos;
+    }
+    function createPoint(xPos, yPos) {
         const point = {
-            x: (2 * prevPoint.x) % N,
-            y: (3 * prevPoint.y) % N,
-            next: [],
-            value: -1
+            xPos: xPos,
+            yPos: yPos,
+            stops: -1,
+            maxStops: -1,
+            sortIndex: -1,
         };
-        points.push(point);
-        prevPoint = point;
+        return point;
     }
-    points = removeDuplicates(points);
-    console.log(`generated 2N=${2 * N} points, removed duplicates rem=${points.length}`);
-    return points;
-}
-function reachable(from, to) {
-    return to.x >= from.x && to.y >= from.y;
-}
-function insertedAlready(newPoint, curPoints) {
-    const len = curPoints.length;
-    const duplicated = (len > 0) && isEqual(curPoints[len - 1], newPoint);
-    return duplicated;
-}
-function nextReachablePointsTraversed(fromPoint, newPoint) {
-    return fromPoint.next.filter(p => p.value == newPoint.value).length > 0;
-}
-function nextReachablePoints(fromPoint, newPoint) {
-    const points = fromPoint.next.filter(p => p.value != newPoint.value && reachable(p, newPoint));
-    points.forEach(p => p.value = newPoint.value);
-    return points;
-}
-function nextUnreachablePoints(fromPoint, newPoint) {
-    const points = fromPoint.next.filter(p => p.value != newPoint.value && reachable(newPoint, p));
-    points.forEach(p => p.value = newPoint.value);
-    return points;
-}
-// function nextPoints(fromPoint: Point, tag: string): Point[] {
-//     const points: Point[] = fromPoint.next.filter( p => p.tag != tag );
-//     points.forEach( p => p.tag = tag );
-//     return points;
-// }
-function insert(fromPoint, newPoint) {
-    let nxtReachablePoints = nextReachablePoints(fromPoint, newPoint);
-    // single branch - loop
-    while (nxtReachablePoints.length === 1) {
-        const nxtPoint = nxtReachablePoints[0];
-        nxtReachablePoints = nextReachablePoints(nxtPoint, newPoint);
-        fromPoint = nxtPoint;
+    function removeDuplicates(points, index = -1) {
+        console.log(`removing dups index=${index}`);
+        points.sort((p1, p2) => p1.xPos - p2.xPos || p1.yPos - p2.yPos);
+        const newPoints = points.filter((p, i) => i + 1 == points.length || !isEqual(p, points[i + 1]));
+        points.length = 0;
+        return newPoints;
     }
-    // multi branch - recurse
-    let HasPath = nextReachablePointsTraversed(fromPoint, newPoint);
-    for (const nxtReachablePoint of nxtReachablePoints) {
-        if (isEqual(nxtReachablePoint, newPoint))
-            continue;
-        if (reachable(nxtReachablePoint, newPoint)) {
-            HasPath = true;
-            insert(nxtReachablePoint, newPoint);
-        }
-    }
-    // if (!HasPath) {
-    for (const nxtUnreachablePoint of nextUnreachablePoints(fromPoint, newPoint)) {
-        if (isEqual(nxtUnreachablePoint, newPoint))
-            continue;
-        if (reachable(newPoint, nxtUnreachablePoint)) {
-            HasPath = true;
-            newPoint.next.push(nxtUnreachablePoint);
-            fromPoint.next[fromPoint.next.indexOf(nxtUnreachablePoint)] = newPoint;
-            return;
-        }
-    }
-    // }
-    // here we add as a sibling to .next (can be empty)
-    if (!HasPath && !insertedAlready(newPoint, fromPoint.next)) {
-        fromPoint.next.push(newPoint);
-    }
-}
-function verifyInsert(fromPoint, visitedValue) {
-    // console.log(toStrWithNext(fromPoint));
-    let nextPoints = fromPoint.next;
-    while (nextPoints.length === 1) {
-        const nextPoint = nextPoints[0];
-        if (!reachable(fromPoint, nextPoint)) {
-            throw `A ${toStr(fromPoint)}==>${toStr(nextPoint)}`;
-        }
-        nextPoint.value = visitedValue;
-        fromPoint = nextPoint;
-        nextPoints = fromPoint.next;
-    }
-    for (let i = 0; i < nextPoints.length; i++) {
-        for (let j = i + 1; j < nextPoints.length; j++) {
-            if (reachable(nextPoints[i], nextPoints[j]) || reachable(nextPoints[j], nextPoints[i])) {
-                throw `B ${toStr(fromPoint)}==>[${toStr(nextPoints[i])}<>${toStr(nextPoints[j])}}`;
+    function generatePoints(N) {
+        let points = [createPoint(0, 0), createPoint(1, 1)];
+        let prevPoint = points[1];
+        for (let i = 1; i <= 2 * N; i++) {
+            const point = createPoint((2 * prevPoint.xPos) % N, (3 * prevPoint.yPos) % N);
+            points.push(point);
+            prevPoint = point;
+            if (i % 1e6 === 0) {
+                points = removeDuplicates(points, i);
             }
         }
+        points = removeDuplicates(points);
+        console.log(`generated N=${N} generated=${2 * N} remaining=${points.length}`);
+        // origin is special point
+        points[0].stops = 0;
+        points[0].maxStops = 0;
+        points[0].sortIndex = 0;
+        return points;
     }
-    for (const nextPoint of nextPoints) {
-        // if (nextPoint.tag == tag) continue;
-        nextPoint.value = visitedValue;
-        verifyInsert(nextPoint, visitedValue);
+    function countUnique(nums) {
+        nums.sort((a, b) => a - b);
+        return nums.filter((v, i) => i == nums.length - 1 || v != nums[i + 1]).length;
     }
-}
-// const CACHE: Map<string, Integer> = new Map();
-// function getCacheValue(fromPoint: Point): Integer {
-//     let result = CACHE.get(toStr(fromPoint));
-//     if (!result) {
-//         result = countMax(fromPoint) + 1;
-//         CACHE.set(toStr(fromPoint), result)
-//     }
-//     return result as Integer;
-// }
-function countMax(fromPoint) {
-    let nxtPoints = fromPoint.next;
-    if (nxtPoints.length === 0) {
-        fromPoint.value = 0;
-        return 0;
-    }
-    // single branch - loop
-    let cntSingle = 0;
-    while (nxtPoints.length === 1) {
-        cntSingle++;
-        const nxtPoint = nxtPoints[0];
-        nxtPoints = nxtPoint.next;
-        fromPoint = nxtPoint;
-    }
-    if (nxtPoints.length === 0)
-        return cntSingle;
-    // multi branch - recurse
-    let cntMulti = 0;
-    for (const nxtPoint of nxtPoints) {
-        if (nxtPoint.value < 0) {
-            nxtPoint.value = countMax(nxtPoint) + 1;
+    function indexPoints(points) {
+        const xs = [];
+        const ys = [];
+        for (const point of points) {
+            xs.push(point.xPos);
+            ys.push(point.yPos);
         }
-        cntMulti = Math.max(cntMulti, nxtPoint.value);
+        const xsUnique = countUnique(xs);
+        const ysUnique = countUnique(ys);
+        xs.length = 0;
+        ys.length = 0;
+        console.log(`points=${points.length} uniqueX=${xsUnique} uniqueY=${ysUnique}`);
+        let axisPoints = [];
+        let increment = 0;
+        if (xsUnique > xsUnique) {
+            axisPoints = Array(ysUnique);
+            points.sort((p1, p2) => p1.yPos - p2.yPos || p1.xPos - p2.xPos);
+            for (let i = 1; i < points.length; i++) {
+                increment = (points[i].yPos == points[i - 1].yPos) ? 0 : 1;
+                points[i].sortIndex = points[i - 1].sortIndex + increment;
+            }
+            points.sort((p1, p2) => p1.xPos - p2.xPos || p1.yPos - p2.yPos);
+        }
+        else {
+            axisPoints = Array(xsUnique);
+            points.sort((p1, p2) => p1.xPos - p2.xPos || p1.yPos - p2.yPos);
+            for (let i = 1; i < points.length; i++) {
+                increment = (points[i].xPos == points[i - 1].xPos) ? 0 : 1;
+                points[i].sortIndex = points[i - 1].sortIndex + increment;
+            }
+            points.sort((p1, p2) => p1.yPos - p2.yPos || p1.xPos - p2.xPos);
+        }
+        // debugPrint(points);
+        console.log(`indexed=${points.length}`);
+        return { points: axisPoints, maxIndex: -1 };
     }
-    return cntMulti + cntSingle;
-}
-const ARG2 = parseInt(process.argv[2] ?? "22");
-function path(N) {
-    const points = generatePoints(N);
-    points.slice(1).forEach((p, i) => {
-        p.value = i;
-        insert(ORIGIN, p);
-        if (i % 2500 == 0)
-            console.log(`index=${i} point :: ${toStrWithNext(p)}`);
-    });
-    resetValue(points);
-    return countMax(ORIGIN);
-}
-function run() {
-    const startTime = new Date().getMilliseconds();
-    let cnt = 0;
-    for (let k = 1; k <= 30; k++) {
-        let N = k ** 5;
-        const result = path(N);
-        cnt += result;
-        console.log(`k=${k} result=${result} cnt=${cnt}`);
-    }
-    const endTime = new Date().getMilliseconds();
-    console.log(`time elapsed ${(endTime - startTime) / 1000} seconds.`);
-    return cnt;
-}
-function test() {
-    console.log(`N=22 Result=${path2(22)}`);
-    console.log(`N=122 Result=${path2(123)}`);
-    console.log(`N=10000 Result=${path2(10000)}`);
-}
-console.log(test());
-function insertNewPoint(coordsYSorted, pointsXSorted, newPointXIndex) {
-    const newPoint = pointsXSorted[newPointXIndex];
-    // find xMinIndex using coordsYSorted
-    const yComparator = (coord) => coord.y - newPoint.y || coord.x - newPoint.x;
-    const yIndex = common_1.Numbers.indexOf(coordsYSorted, yComparator);
-    const yCoordTarget = coordsYSorted[yIndex - 1];
-    const xComparator = (point) => point.x - yCoordTarget.x || point.y - yCoordTarget.y;
-    const xMinIndex = common_1.Numbers.indexOf(pointsXSorted, xComparator);
-    // find all the valid fromPoints, insert after them.
-    for (let x = xMinIndex; x < newPointXIndex; x++) {
-        const fromPoint = pointsXSorted[x];
-        let isDirect = true;
-        for (let t = x + 1; t < newPointXIndex; t++) {
-            // check if there is an intermediate
-            if (reachable(fromPoint, pointsXSorted[t])) {
-                isDirect = false;
+    function addPoint(point, axisPoints) {
+        const { points, maxIndex } = axisPoints;
+        for (let i = point.sortIndex; i >= 0; i--) {
+            if (points[i]) {
+                point.stops = points[i].maxStops + 1;
+                point.maxStops = points[i].maxStops + 1;
                 break;
             }
         }
-        if (isDirect) {
-            2;
-            let addCount = 0;
-            for (const nxtPoint of fromPoint.next) {
-                if (reachable(newPoint, nxtPoint)) {
-                    addCount++;
-                    fromPoint.next[fromPoint.next.indexOf(nxtPoint)] = newPoint;
-                    newPoint.next.push(nxtPoint);
-                }
-            }
-            if (addCount === 0) {
-                fromPoint.next.push(newPoint);
+        for (let i = point.sortIndex + 1; i <= maxIndex; i++) {
+            if (points[i]) {
+                if (points[i].maxStops >= point.maxStops)
+                    break;
+                points[i].maxStops = point.maxStops;
             }
         }
-        ;
+        axisPoints.points[point.sortIndex] = point;
+        axisPoints.maxIndex = Math.max(axisPoints.maxIndex, point.sortIndex);
+        // debugPrint(axisPoints.points);
     }
-}
-function path2(N) {
-    const points = generatePoints(N);
-    const coords = points.map(p => newCoord(p));
-    coords.sort((a, b) => a.y - b.y || a.x - b.x);
-    points.slice(1).forEach((p, i) => {
-        p.value = i;
-        insertNewPoint(coords, points, i);
-        if (i % 2500 == 0)
-            console.log(`index=${i} point :: ${toStrWithNext(p)}`);
-    });
-    resetValue(points);
-    return countMax(ORIGIN);
-}
+    function computeMaxStations(N) {
+        const points = generatePoints(N);
+        const axisPoints = indexPoints(points);
+        axisPoints.points[0] = points[0];
+        axisPoints.maxIndex = 0;
+        for (let i = 1; i < points.length; i++) {
+            const point = points[i];
+            addPoint(point, axisPoints);
+            if (i % 100000 == 2499)
+                console.log(`index=${i}/${points.length} sortedPoints=${axisPoints.maxIndex}`);
+        }
+        const maxStops = axisPoints.points[axisPoints.points.length - 1].maxStops;
+        points.length = 0;
+        axisPoints.points.length = 0;
+        return maxStops;
+    }
+    function run(Ns) {
+        const startTime = new Date().getTime();
+        let k = 1;
+        let cumTotal = 0;
+        for (const N of Ns) {
+            console.log(`\nStarting k=${k}`);
+            const result = computeMaxStations(N);
+            cumTotal += result;
+            const endTime = new Date().getTime();
+            console.log(`k=${k} N=${N} resultN=${result} resultCum=${cumTotal} duration=${(endTime - startTime) / 1000} seconds.`);
+            k++;
+        }
+        const endTime = new Date().getMilliseconds();
+        console.log(`time elapsed ${(endTime - startTime) / 1000} seconds.`);
+        return cumTotal;
+    }
+    N411.run = run;
+})(N411 || (N411 = {}));
+console.log(`N=22 Result=${N411.run([22])}`);
+console.log(`N=123 Result=${N411.run([123])}`);
+console.log(`N=10000 Result=${N411.run([10000])}`);
+const Ns = Array(2).fill(0).map((v, i) => (i + 29) ** 5);
+console.log(`N=${Ns} Result=${N411.run(Ns)}`);
 //# sourceMappingURL=411.js.map

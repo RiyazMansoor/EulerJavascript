@@ -9,6 +9,7 @@
  *
  * Answer = 59206
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 function e168() {
     // special case where k == 1 => n = u(10^d - 1)/9
     let sum = BigInt(5 * (99 + 999 + 9999) + 5 * 99999 * 95);

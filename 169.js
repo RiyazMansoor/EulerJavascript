@@ -10,6 +10,7 @@
     10^25   =>                          => 178653872807
     
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 function resolve(power) {
     const sol = [];
     let N = 10n ** BigInt(power);

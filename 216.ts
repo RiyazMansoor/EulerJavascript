@@ -17,7 +17,9 @@ repeat k times:
 return “probably prime”
 */
 
-import { Integer } from "./common";
+import { Integer, PRIMES1000 } from "./common";
+import { PrimeLib } from "./lib/prime";
+
 
 // calculates   base^exponent % modulus
 function PowerMod(base: Integer, exponent: Integer, modulus: Integer): Integer {
@@ -33,7 +35,7 @@ function PowerMod(base: Integer, exponent: Integer, modulus: Integer): Integer {
     return result;
 }
 
-console.log(PowerMod(parseInt(process.argv[2]),parseInt(process.argv[3]),parseInt(process.argv[4])))
+// console.log(PowerMod(parseInt(process.argv[2]),parseInt(process.argv[3]),parseInt(process.argv[4])))
 
 function IsProbablePrime(num: Integer, rounds: Integer): boolean {
     let numMinusOne: Integer = num - 1;
@@ -46,7 +48,8 @@ function IsProbablePrime(num: Integer, rounds: Integer): boolean {
     console.log(`n=${num} s=${s} d=${d}`);
     for (let round = 0; round < rounds; round++) {
         const a: Integer = Math.floor(Math.random() * (num - 4)) + 2;
-        let x: Integer = PowerMod(a, d, num), y: Integer = 0;
+        let x: Integer = PowerMod(a, d, num);
+        let y: Integer = 0;
         for (let si = 0; si < s; si++) {
             y = PowerMod(x, 2, num);
             if (y === 1 && x !== 1 && x !== (num - 1)) return false;
@@ -69,4 +72,20 @@ function run(): Integer {
 }
 
 // console.log(run());
+
+function runLib(): Integer {
+    let cnt: Integer = 0;
+    for (let n = 2; n <= 1000; n++) {
+        if (n % 100 === 0) console.log(n);
+        const isPrime: boolean = PrimeLib.isProbablePrime(2*n*n - 1);
+        if (isPrime) cnt++;
+    }
+    console.log(PRIMES1000.length);
+    return cnt;
+}
+
+console.log(runLib());
+
+
+
 

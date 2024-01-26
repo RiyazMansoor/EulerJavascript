@@ -98,22 +98,20 @@ var Numbers;
      * @param target number to find
      * @returns index of <b>target</b> or negative if not found
      */
-    function binarySearch(nums, target) {
-        let l_index = 0;
-        let r_index = nums.length - 1;
+    function binarySearch(nums, target, lIndex = 0, rIndex = nums.length - 1) {
         // if this condition failes, number not found, return -1
-        while (l_index <= r_index) {
-            const m_index = Math.floor((l_index + r_index) / 2);
+        while (lIndex <= rIndex) {
+            const mIndex = Math.floor((lIndex + rIndex) / 2);
             // return index if number found
-            if (nums[m_index] === target) {
-                return m_index;
+            if (nums[mIndex] === target) {
+                return mIndex;
             }
             // if number not found, move pointers
-            if (target < nums[m_index]) {
-                r_index = m_index - 1;
+            if (target < nums[mIndex]) {
+                rIndex = mIndex - 1;
             }
             else {
-                l_index = m_index + 1;
+                lIndex = mIndex + 1;
             }
         }
         return -1;
@@ -234,7 +232,7 @@ var Numbers;
         return result;
     }
     Numbers.Permutations = Permutations;
-})(Numbers = exports.Numbers || (exports.Numbers = {}));
+})(Numbers || (exports.Numbers = Numbers = {}));
 /**
  * This namespace provides types, constants and functions relating to the Pythagorean Theorem.
  */
@@ -263,7 +261,7 @@ var Pythagorean;
         ];
     }
     Pythagorean.NextTriples = NextTriples;
-})(Pythagorean = exports.Pythagorean || (exports.Pythagorean = {}));
+})(Pythagorean || (exports.Pythagorean = Pythagorean = {}));
 /**
  * This namespace provides types, constants and functions relating to <b>Set</b> operations.
  */
@@ -312,7 +310,7 @@ var Set;
         return combinations;
     }
     Set.Combinations = Combinations;
-})(Set = exports.Set || (exports.Set = {}));
+})(Set || (exports.Set = Set = {}));
 var Util;
 (function (Util) {
     const fs = require('fs');
@@ -328,8 +326,13 @@ var Util;
         return csv.split("\n").map(line => line.split(",").map(data => parseInt(data.trim())));
     }
     Util.csvToIntMatrix = csvToIntMatrix;
-})(Util = exports.Util || (exports.Util = {}));
+    function peek(array) {
+        return array[array.length - 1];
+    }
+    Util.peek = peek;
+})(Util || (exports.Util = Util = {}));
 class PrimeNumbers {
+    primes;
     constructor(uptoN) {
         // const hard_primes = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
         const primes_lst = [];
@@ -376,6 +379,10 @@ class PrimeNumbers {
         return Numbers.binarySearch(this.primes, candidatePrime);
     }
     isPrime(candidatePrime) {
+        if (candidatePrime == 2 || candidatePrime == 3)
+            return true;
+        if (candidatePrime % 2 == 0)
+            return false;
         return (this.indexOf(candidatePrime) >= 0);
     }
     factorise(num) {
@@ -401,9 +408,9 @@ class PrimeNumbers {
 }
 exports.PrimeNumbers = PrimeNumbers;
 class Fraction {
+    num = 1;
+    den = 1;
     constructor(numerator, denominator) {
-        this.num = 1;
-        this.den = 1;
         this.num = numerator;
         this.den = denominator;
     }
@@ -447,9 +454,9 @@ class Fraction {
 }
 exports.Fraction = Fraction;
 class ComplexNumber {
+    real = 0n;
+    imaginary = 0n;
     constructor(real, imaginary) {
-        this.real = 0n;
-        this.imaginary = 0n;
         this.real = real;
         this.imaginary = imaginary;
     }
@@ -478,9 +485,9 @@ class ComplexNumber {
 }
 exports.ComplexNumber = ComplexNumber;
 class PowerNumber {
+    val = 1;
+    num = new Map();
     constructor(base = 1, power = 1) {
-        this.val = 1;
-        this.num = new Map();
         this.num.set(base, power);
         this.val = Math.pow(base, power);
     }

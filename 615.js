@@ -1,66 +1,81 @@
 "use strict";
+/*
+arg=8500, prime=87557
+Max Paths = 1011913
+1000000 :: value=86597.5000000000 digitsExtra=3 primes=5,11,47,67
+answer=108424772
+*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("./common");
-var E615;
-(function (E615) {
-    const MODULO = 123454321;
-    const MAX = parseInt(process.argv[2] ?? "1500000");
-    const PRIMES = new common_1.PrimeNumbers(MAX).toArray();
-    // clear this solution container before calling find() function below
+const PRIMES = new common_1.PrimeNumbers(1e6).toArray();
+const ARG2_PRIMES_INDEX = parseInt(process.argv[2] ?? "4");
+function ToStr(path) {
+    return `value=${path.relativeValue.toFixed(10)} digitsExtra=${path.digitsExtra} primes=${path.primes}`;
+}
+function sort(paths) {
+    paths.sort((a, b) => a.relativeValue - b.relativeValue);
+}
+function PathNext(fromPath, prime, power) {
+    const newPrimes = fromPath.primes.concat(Array(power).fill(prime));
+    const newValue = newPrimes.reduce((pv, cv) => pv * cv / 2, 1) * Math.pow(2, fromPath.digitsExtra);
+    return {
+        relativeValue: newValue,
+        digitsExtra: fromPath.digitsExtra,
+        primes: newPrimes,
+    };
+}
+function Paths(MAX, runPrimeIndex, path) {
     const paths = [];
-    function find(product, path, lastPrimeIndex) {
-        for (let i = lastPrimeIndex; i < PRIMES.length; i++) {
-            const prime = PRIMES[i];
-            if (product * prime > MAX) {
-                // console.log(`${path}`);
-                const denom = Math.pow(2, (path[0] == 2 ? 1 : path.length));
-                const pv = {
-                    value: product / denom,
-                    primes: path
-                };
-                paths.push(pv);
-                return;
-            }
-            find(product * prime, path.concat([prime]), i);
-            // if (paths.length > 2e6) break;
+    prime_loop: for (let newRunPrimeIndex = runPrimeIndex + 1; true; newRunPrimeIndex++) {
+        for (let runPrimePow = 1; true; runPrimePow++) {
+            const pathNext = PathNext(path, PRIMES[newRunPrimeIndex], runPrimePow);
+            if (runPrimePow == 1 && pathNext.relativeValue > MAX)
+                break prime_loop;
+            if (pathNext.relativeValue > MAX)
+                break;
+            paths.push(pathNext);
+            const results = Paths(MAX, newRunPrimeIndex, pathNext);
+            if (results.length === 0)
+                continue;
+            results.forEach(p => paths.push(p));
         }
     }
-    function moduloPower(base, power, modulo) {
-        let result = 1;
-        while (power > 0) {
-            result = (result * base) % modulo;
-            power--;
+    return paths;
+}
+const MAX = PRIMES[parseInt(process.argv[2] ?? "3")];
+function run() {
+    console.log(`arg=${process.argv[2] ?? 3}, prime=${MAX}`);
+    const allPaths = [];
+    const digitsExtraMax = Math.floor(Math.log2(MAX));
+    for (let digitsExtra = 0; digitsExtra <= digitsExtraMax; digitsExtra++) {
+        const startPath = { relativeValue: 1, digitsExtra: digitsExtra, primes: [] };
+        const paths = Paths(MAX, 0, startPath);
+        startPath.primes = Array(digitsExtra).fill(2);
+        startPath.relativeValue = startPath.primes.reduce((pv, prime) => pv * prime, 1);
+        paths.push(startPath);
+        sort(paths);
+        paths.forEach(p => allPaths.push(p));
+        // paths.forEach( (p, i) => console.log(`${i} :: ${ToStr(p)}`) );
+    }
+    if (allPaths.length < 1e6) {
+        console.log(`Max Paths = ${allPaths.length}`);
+    }
+    else {
+        console.log(`Max Paths = ${allPaths.length}`);
+        sort(allPaths);
+        const path = allPaths[999999];
+        console.log(`1000000 :: ${ToStr(path)}`);
+        const blk = 25;
+        const blks = 1e6 / blk;
+        let val = Array(blk - path.primes.length + path.digitsExtra).fill(2).concat(path.primes).reduce((pv, cv) => pv * cv, 1);
+        for (let cnt = 1; cnt < blks; cnt++) {
+            val %= 123454321;
+            val *= Math.pow(2, blk);
         }
-        return result;
+        val %= 123454321;
+        console.log(`answer=${val}`);
     }
-    function moduloArray(nums, modulo) {
-        return nums.reduce((pv, cv) => (pv * cv) % modulo, 1);
-    }
-    function run() {
-        const timestart = new Date().getTime();
-        let cnt = 0;
-        find(1, [], 0);
-        console.log(paths.length);
-        paths.sort((a, b) => a.value - b.value);
-        // paths.forEach( path => console.log(`value=${path.value} path=${path.primes}`));
-        const primes = paths[1e6 - 1].primes;
-        console.log(paths[1e6 - 1].value);
-        console.log(primes);
-        const twopower = 1e6 - (primes[0] == 2 ? 1 : primes.length);
-        cnt = (moduloPower(2, twopower, MODULO) * moduloArray(primes, MODULO)) % MODULO;
-        // const wholecount: Integer = Math.floor(twopower / 20);
-        // let result: Integer = Math.pow(2, twopower % 20) % MODULO;
-        // for (let i = 0; i < wholecount; i++) {
-        //     result = (result * Math.pow(2, 20)) % MODULO;
-        // }
-        // for (let i = 0; i < primes.length; i++) {
-        //     result = (result * primes[i]) % MODULO;
-        // }
-        // cnt = result;
-        const timeend = new Date().getTime();
-        console.log(`Complete in ${(timeend - timestart) / 1000} seconds;`);
-        return cnt;
-    }
-    E615.run = run;
-})(E615 || (E615 = {}));
-console.log(E615.run());
+    // allPaths.forEach( (p, i) => console.log(`${i} :: ${ToStr(p)}`) );
+}
+run();
+//# sourceMappingURL=615.js.map

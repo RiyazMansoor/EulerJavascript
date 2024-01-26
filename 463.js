@@ -1,48 +1,47 @@
 "use strict";
-const Modulo = 1000000000n;
+Object.defineProperty(exports, "__esModule", { value: true });
+const MODULUS = 1000000000n;
 const CACHE = new Map();
-const ARG2 = parseInt(process.argv[2] ?? "8");
-const MAXN = ARG2 ? BigInt(ARG2) : 3n ** 37n;
-function cacheValue(N) {
-    let result = CACHE.get(N);
+const MaxN = parseInt(process.argv[2] ?? "8");
+function cacheValue(num) {
+    let result = CACHE.get(num);
     if (!result) {
-        result = rcompute(N % Modulo);
-        CACHE.set(N, result);
-        // } else {
-        //     console.log(`cache hit N=${N} result=${result}`);
+        result = rcompute(num);
+        CACHE.set(num, result);
     }
     return result;
 }
-function reduceEven(N) {
-    while (N % 2n === 0n) {
-        N /= 2n;
+function reduceEven(num) {
+    while (num % 2 === 0) {
+        num /= 2;
     }
-    return cacheValue(N);
+    return cacheValue(num);
 }
-function rcompute(N) {
-    if (N === 1n) {
-        return 1n;
+function rcompute(num) {
+    if (num === 1) {
+        return 1;
     }
-    if (N === 3n) {
-        return 3n;
+    if (num === 3) {
+        return 3;
     }
-    if (N % 2n === 0n) {
-        return reduceEven(N);
+    if (num % 2 === 0) {
+        return reduceEven(num);
     }
-    const n = N / 4n;
-    const lpart = cacheValue(2n * n + 1n);
-    const rpart = reduceEven(n);
-    if (N % 4n === 1n) {
-        return 2n * lpart - rpart;
+    const newnum = Math.floor(num / 4);
+    const lpart = cacheValue(2 * newnum + 1);
+    const rpart = reduceEven(newnum);
+    const remainder = num % 4;
+    if (remainder === 1) {
+        return 2 * lpart - rpart;
     }
-    if (N % 4n === 3n) {
-        return 3n * lpart - 2n * rpart;
+    if (remainder === 3) {
+        return 3 * lpart - 2 * rpart;
     }
-    return 0n;
+    return 0;
 }
 function rrun() {
-    let sum = 0n;
-    for (let N = 1n; N <= MAXN; N++) {
+    let sum = 0;
+    for (let N = 1; N <= MaxN; N++) {
         const result = rcompute(N);
         sum += result;
         console.log(N, result);

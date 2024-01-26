@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BLUM_ZERO = 14025256;
 const BLUM_DENO = 20300713;
 function blum_cycle() {
